@@ -48,7 +48,7 @@ const Sidebar = ({ children }) => {
               leaveFrom="translate-x-0"
               leaveTo="-translate-x-full"
             >
-              <div className="relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-gray-900">
+              <div className="relative flex-1 flex flex-col max-w-xs h-full w-full pt-5 pb-4 bg-gray-900">
                 <Transition.Child
                   as={Fragment}
                   enter="ease-in-out duration-300"
@@ -83,7 +83,7 @@ const Sidebar = ({ children }) => {
                   </div>
                 </div>
                 <nav
-                  className="mt-5 flex-shrink-0 h-full overflow-y-hidden"
+                  className="mt-5 flex-shrink-0 h-max overflow-y-auto "
                   aria-label="Sidebar"
                 >
                   <div className="space-y-1">
@@ -121,9 +121,9 @@ const Sidebar = ({ children }) => {
                       ))}
                     </div>
                   </div>
-                  <Link href="/auth/login">
-                    <div className="flex-shrink-0 flex">
-                      <div className="px-4 flex-shrink-0 w-full mt-[27rem]">
+                  <div className="absolute bottom-0 left-0 right-0 pb-3 flex-shrink-0">
+                    <div className="px-4 flex-shrink-0 w-full h-max">
+                      <Link href="/auth/login">
                         <div className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent bg-[#3D00B7] hover:bg-[#3d00b7a1] text-base font-medium text-white shadow focus:outline-none ">
                           {/* <LoginIcon className="w-5 h-5" /> */}
                           <svg viewBox="0 0 24 24" width="16" height="16">
@@ -138,9 +138,9 @@ const Sidebar = ({ children }) => {
                           </svg>
                           <span className="font-medium">Log in</span>
                         </div>
-                      </div>
+                      </Link>
                     </div>
-                  </Link>
+                  </div>
                 </nav>
               </div>
             </Transition.Child>
