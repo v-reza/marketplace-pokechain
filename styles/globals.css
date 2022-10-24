@@ -39,4 +39,12 @@ a {
   background-color: #a0aec0;
 }
 
+#scroll_item_topSales {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+#scroll_item_topSales::-webkit-scrollbar {
+  display: none;
+}
+
 
