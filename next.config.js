@@ -10,6 +10,9 @@ const nextConfig = {
   env: {
     CI: false,
     GENERATE_SOURCEMAP: false
+  },
+  images: {
+    domains: ["raw.githubusercontent.com"]
   }
 }
 

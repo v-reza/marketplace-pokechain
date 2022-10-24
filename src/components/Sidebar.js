@@ -16,12 +16,12 @@ const SidebarMainContent = ({ children }) => {
 
 const Sidebar = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [largeSidebarOpen, setLargeSidebarOpen] = useState(true);
+  const [largeSidebarOpen, setLargeSidebarOpen] = useState(false);
   const [openAuthModal, setOpenAuthModal] = useState(false);
 
   return (
     <>
-      <div className="min-h-full">
+      <div className="h-screen min-h-full">
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
@@ -240,7 +240,7 @@ const Sidebar = ({ children }) => {
             </nav>
           </div>
           <div
-            className="flex-shrink-0 flex pb-5"
+            className="flex-shrink-0 flex pb-5 bg-gray-900"
             onClick={() => setOpenAuthModal(true)}
           >
             <div className="px-4 flex-shrink-0 w-full">
@@ -266,7 +266,7 @@ const Sidebar = ({ children }) => {
         <div
           className={`${
             largeSidebarOpen ? "lg:pl-72" : "lg:pl-24"
-          } flex flex-col flex-1 duration-150 bg-gray-900`}
+          } flex flex-col flex-1 duration-150 bg-gray-900 min-h-full`}
         >
           <div className="relative z-10 flex-shrink-0 flex lg:hidden h-16  lg:border-none ">
             <button
