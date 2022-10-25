@@ -208,7 +208,7 @@ const TopSales = () => {
                   </span>
                   <div className="flex-shrink-0">
                     <Image
-                      alt="sales_stats"
+                      alt="pokemon"
                       src={item.sprites.other.home.front_default}
                       width={50}
                       height={50}

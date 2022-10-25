@@ -38,6 +38,9 @@ a {
   cursor: pointer;
   background-color: #a0aec0;
 }
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
 
 #scroll_item_topSales {
   -ms-overflow-style: none;
@@ -47,4 +50,9 @@ a {
   display: none;
 }
 
-
+#btn_login {
+  background: linear-gradient(104.04deg, #ffb444, #eb6f3a);
+}
+#btn_login:hover {
+  background: #eb6f3a
+}

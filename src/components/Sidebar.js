@@ -16,7 +16,7 @@ const SidebarMainContent = ({ children }) => {
 
 const Sidebar = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [largeSidebarOpen, setLargeSidebarOpen] = useState(false);
+  const [largeSidebarOpen, setLargeSidebarOpen] = useState(true);
   const [openAuthModal, setOpenAuthModal] = useState(false);
 
   return (
@@ -124,7 +124,7 @@ const Sidebar = ({ children }) => {
                   <div className="absolute bottom-0 left-0 right-0 pb-3 flex-shrink-0">
                     <div className="px-4 flex-shrink-0 w-full h-max">
                       <Link href="/auth/login">
-                        <div className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent bg-[#3D00B7] hover:bg-[#3d00b7a1] text-base font-medium text-white shadow focus:outline-none ">
+                        <div className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent text-base font-medium text-white shadow focus:outline-none" id="btn_login">
                           {/* <LoginIcon className="w-5 h-5" /> */}
                           <svg viewBox="0 0 24 24" width="16" height="16">
                             <path
@@ -244,7 +244,7 @@ const Sidebar = ({ children }) => {
             onClick={() => setOpenAuthModal(true)}
           >
             <div className="px-4 flex-shrink-0 w-full">
-              <div className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent bg-[#3D00B7] hover:bg-[#3d00b7a1] text-base font-medium text-white shadow focus:outline-none ">
+              <div className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent  text-base font-medium text-white shadow focus:outline-none" id="btn_login">
                 <svg viewBox="0 0 24 24" width="16" height="16">
                   <path
                     d="M6.75 3.25A4.75 4.75 0 0 0 2 8v8a4.75 4.75 0 0 0 4.75 4.75H14A4.75 4.75 0 0 0 18.75 16a.75.75 0 0 0-1.5 0A3.25 3.25 0 0 1 14 19.25H9.464A4.733 4.733 0 0 0 10.75 16V8c0-1.257-.488-2.4-1.286-3.25H14A3.25 3.25 0 0 1 17.25 8a.75.75 0 0 0 1.5 0A4.75 4.75 0 0 0 14 3.25H6.75Z"
