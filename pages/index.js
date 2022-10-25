@@ -3,6 +3,8 @@
 import Head from "next/head";
 import OverallStats from "@/components/HomePages/OverallStats";
 import TopSales from "@/components/HomePages/TopSales";
+import RecentSales from "@/components/HomePages/RecentSales";
+import RecentListings from "@/components/HomePages/RecentListings";
 
 export default function IndexPages() {
   return (
@@ -20,6 +22,8 @@ export default function IndexPages() {
             {/* Overall Stats */}
             <OverallStats />
             <TopSales />
+            <RecentSales/>
+            <RecentListings/>
           </main>
         </div>
       </div>

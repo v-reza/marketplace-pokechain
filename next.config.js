@@ -9,7 +9,9 @@ const nextConfig = {
   },
   env: {
     CI: false,
-    GENERATE_SOURCEMAP: false
+    GENERATE_SOURCEMAP: false,
+    currency: "USD",
+    formatCurrency: "$ "
   },
   images: {
     domains: ["raw.githubusercontent.com"]
