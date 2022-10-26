@@ -52,6 +52,7 @@ const TopSales = () => {
   const [randomOffset, setRandomOffset] = useState(
     Math.floor(Math.random() * 800)
   );
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const getPokemon = async () => {
       try {
@@ -72,6 +73,8 @@ const TopSales = () => {
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
     getPokemon();
@@ -197,103 +200,116 @@ const TopSales = () => {
             </div>
           </div>
           <div className="mt-4 pb-10 mx-auto max-w-md px-4 grid gap-4 lg:gap-12 sm:max-w-4xl sm:px-6 lg:px-8 sm:grid-cols-2  md:max-w-5xl md:grid-cols-2 xl:grid-cols-3 lg:max-w-full">
-            {pokemon.map((item, index) => (
-              <div
-                className="flex items-center justify-between relative hover:bg-slate-700/50 rounded-md px-2 py-2  cursor-pointer"
-                key={index}
-              >
-                <div className="flex items-center">
-                  <span className="flex items-center mr-3 text-md text-slate-500">
-                    {index + 1}
-                  </span>
-                  <div className="flex-shrink-0">
-                    <Image
-                      alt="pokemon"
-                      src={item.sprites.other.home.front_default}
-                      width={50}
-                      height={50}
-                      blurDataURL
-                      placeholder="blur"
-                      priority
-                    />
-                  </div>
-                  <div className="flex flex-col ml-6">
-                    <div
-                      className={`flex items-center  bg-slate-700 rounded-md px-2 w-max py-1 space-x-1`}
-                    >
-                      {item.types.map((element, index) => {
-                        const elementImage = getPokemonElementType(
-                          element.type.name
-                        );
-                        return (
-                          <div
-                            key={index}
-                            className="text-sm font-extrabold text-white "
-                          >
-                            <Tooltip
-                              placement="top"
-                              content={
-                                <span className="capitalize">
-                                  {element.type.name}
-                                </span>
-                              }
-                            >
-                              <Image
-                                alt={index}
-                                src={elementImage.img}
-                                width={20}
-                                height={20}
-                                style={{ marginTop: "1px" }}
-                              />
-                            </Tooltip>
-                          </div>
-                        );
-                      })}
+            {!loading
+              ? pokemon.map((item, index) => (
+                  <div
+                    className="flex items-center justify-between relative hover:bg-slate-700/50 rounded-md px-2 py-2  cursor-pointer"
+                    key={index}
+                  >
+                    <div className="flex items-center">
+                      <span className="flex items-center mr-3 text-md text-slate-500">
+                        {index + 1}
+                      </span>
+                      <div className="flex-shrink-0">
+                        <Image
+                          alt="pokemon"
+                          src={item.sprites.other.home.front_default}
+                          width={50}
+                          height={50}
+                          blurDataURL
+                          placeholder="blur"
+                          priority
+                        />
+                      </div>
+                      <div className="flex flex-col ml-6">
+                        <div
+                          className={`flex items-center  bg-slate-700 rounded-md px-2 w-max py-1 space-x-1`}
+                        >
+                          {item.types.map((element, index) => {
+                            const elementImage = getPokemonElementType(
+                              element.type.name
+                            );
+                            return (
+                              <div
+                                key={index}
+                                className="text-sm font-extrabold text-white "
+                              >
+                                <Tooltip
+                                  placement="top"
+                                  content={
+                                    <span className="capitalize">
+                                      {element.type.name}
+                                    </span>
+                                  }
+                                >
+                                  <Image
+                                    alt={index}
+                                    src={elementImage.img}
+                                    width={20}
+                                    height={20}
+                                    style={{ marginTop: "1px" }}
+                                  />
+                                </Tooltip>
+                              </div>
+                            );
+                          })}
 
-                      <div
-                        className={`flex items-center -mt-1 text-md !ml-2 ${
-                          item.types.length > 0 &&
-                          "text-transparent bg-clip-text"
-                        }`}
-                        style={
-                          item.types.length === 1
-                            ? {
-                                color: getPokemonElementType(
-                                  item.types[0].type.name
-                                ).hex,
-                              }
-                            : {
-                                backgroundImage: `linear-gradient(to right, ${
-                                  getPokemonElementType(item.types[0].type.name)
-                                    .hex
-                                }, ${
-                                  getPokemonElementType(item.types[1].type.name)
-                                    .hex
-                                })`,
-                              }
-                        }
-                      >
-                        #{Math.floor(Math.random() * 900000)}
+                          <div
+                            className={`flex items-center -mt-1 text-md !ml-2 ${
+                              item.types.length > 0 &&
+                              "text-transparent bg-clip-text"
+                            }`}
+                            style={
+                              item.types.length === 1
+                                ? {
+                                    color: getPokemonElementType(
+                                      item.types[0].type.name
+                                    ).hex,
+                                  }
+                                : {
+                                    backgroundImage: `linear-gradient(to right, ${
+                                      getPokemonElementType(
+                                        item.types[0].type.name
+                                      ).hex
+                                    }, ${
+                                      getPokemonElementType(
+                                        item.types[1].type.name
+                                      ).hex
+                                    })`,
+                                  }
+                            }
+                          >
+                            #{Math.floor(Math.random() * 900000)}
+                          </div>
+                        </div>
+                        <span className="capitalize mt-1 text-xs font-bold text-slate-500">
+                          Oct 19, 2022
+                        </span>
                       </div>
                     </div>
-                    <span className="capitalize mt-1 text-xs font-bold text-slate-500">
-                      Oct 19, 2022
-                    </span>
+                    <div className="absolute top-0 right-0 px-2 py-1 space-y-4 flex flex-col items-end justify-end">
+                      <span className="capitalize text-sm font-bold text-slate-300">
+                        ${Math.floor(Math.random() * 500)}
+                      </span>
+                      <div className="flex items-center">
+                        <Image
+                          alt="token"
+                          src={bgToken}
+                          width={20}
+                          height={20}
+                        />
+                        <span className="capitalize text-sm font-bold text-slate-300 ">
+                          {getPriceToToken(Math.floor(Math.random() * 500))}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="absolute top-0 right-0 px-2 py-1 space-y-4 flex flex-col items-end justify-end">
-                  <span className="capitalize text-sm font-bold text-slate-300">
-                    ${Math.floor(Math.random() * 500)}
-                  </span>
-                  <div className="flex items-center">
-                    <Image alt="token" src={bgToken} width={20} height={20} />
-                    <span className="capitalize text-sm font-bold text-slate-300 ">
-                      {getPriceToToken(Math.floor(Math.random() * 500))}
-                    </span>
+                ))
+              : new Array(9).fill(0).map((_, index) => (
+                  <div key={index}>
+                    <div className="h-16 w-full animate-pulse bg-gray-700 rounded-lg" />
                   </div>
-                </div>
-              </div>
-            ))}
+                ))}
           </div>
         </div>
       </div>

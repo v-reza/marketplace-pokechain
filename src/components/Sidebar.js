@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import { MenuAlt1Icon, ScaleIcon, XIcon } from "@heroicons/react/outline";
 import { ChevronDownIcon } from "@heroicons/react/solid";
@@ -9,6 +9,7 @@ import { classNames } from "@/utils/constant";
 import { navigation } from "@/utils/navigation";
 import LoginModal from "./AuthPages/Login";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const SidebarMainContent = ({ children }) => {
   return <>{children}</>;
@@ -18,6 +19,7 @@ const Sidebar = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [largeSidebarOpen, setLargeSidebarOpen] = useState(true);
   const [openAuthModal, setOpenAuthModal] = useState(false);
+  const router = useRouter();
 
   return (
     <>
@@ -87,44 +89,82 @@ const Sidebar = ({ children }) => {
                   aria-label="Sidebar"
                 >
                   <div className="space-y-1">
-                    <div className="px-2">
-                      <div className="group flex bg-[#3D00B7] hover:bg-[#3d00b7a1] text-white items-center w-full px-8 mb-2  py-2 text-sm leading-6 font-medium rounded-md duration-150 space-x-4">
-                        <ScaleIcon className="w-5 h-5 mr-2" />
-                        Marketplace
-                      </div>
+                    <div>
+                      <Link href={"/"}>
+                        <div
+                          className={`cursor-pointer group flex ${
+                            router.pathname === "/"
+                              ? "bg-[#3D00B7] hover:bg-[#3d00b7a1]"
+                              : "hover:bg-[#3d00b7a1]"
+                          } text-white items-center w-full px-8 mb-2  py-2 text-sm leading-6 font-medium rounded-md duration-150 space-x-4`}
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            width="24"
+                            height="24"
+                            className={`${
+                              router.pathname !== "/" ? "text-slate-400" : null
+                            }`}
+                          >
+                            <path
+                              fillRule="evenodd"
+                              clipRule="evenodd"
+                              d="M12 1.25A3.75 3.75 0 0 0 8.25 5v1a4 4 0 0 0-3.862 3.263l-1.5 8A4 4 0 0 0 6.82 22h10.36a4 4 0 0 0 3.932-4.737l-1.5-8A4 4 0 0 0 15.75 6V5A3.75 3.75 0 0 0 12 1.25ZM14.25 6V5a2.25 2.25 0 0 0-4.5 0v1h4.5Z"
+                              fill={`${
+                                router.pathname === "/"
+                                  ? "rgb(251 191 36)"
+                                  : "currentColor"
+                              }`}
+                            ></path>
+                          </svg>
+                          <span
+                            className={`ml-2 ${
+                              router.pathname === "/"
+                                ? "text-amber-500"
+                                : "text-white"
+                            } font-bold`}
+                          >
+                            Marketplace
+                          </span>
+                        </div>
+                      </Link>
                       <span className="text-sm font-extrabold text-slate-400 px-8">
                         Collections
                       </span>
                     </div>
                     <div className="mt-4 pt-1 space-y-1">
                       {navigation.map((item) => (
-                        <a
-                          key={item.name}
-                          href={item.href}
-                          className={classNames(
-                            item.current
-                              ? "bg-[#3D00B7] text-white"
-                              : "text-cyan-100 hover:text-white hover:bg-[#3d00b7a1]",
-                            "group flex items-center px-2  py-2 text-base font-medium rounded-md"
-                          )}
-                          aria-current={item.current ? "page" : undefined}
-                        >
-                          <img
-                            className={`${
-                              item.customSize ? "w-8 h-8" : "h-5 w-8"
-                            } ml-5 flex-shrink-0 mr-3`}
-                            alt="icon"
-                            src={item.icon}
-                          />
-                          {item.name}
-                        </a>
+                        <Link key={item.name} href={item.href}>
+                          <div
+                            key={item.name}
+                            className={classNames(
+                              router.pathname === item.href
+                                ? "bg-[#3D00B7] text-amber-500"
+                                : "text-cyan-100 hover:text-white hover:bg-[#3d00b7a1]",
+                              "cursor-pointer group flex items-center px-2  py-2 text-base font-medium rounded-md"
+                            )}
+                            aria-current={item.current ? "page" : undefined}
+                          >
+                            <img
+                              className={`${
+                                item.customSize ? "w-8 h-8" : "h-5 w-8"
+                              } ml-5 flex-shrink-0 mr-3`}
+                              alt="icon"
+                              src={item.icon}
+                            />
+                            {item.name}
+                          </div>
+                        </Link>
                       ))}
                     </div>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 pb-3 flex-shrink-0">
                     <div className="px-4 flex-shrink-0 w-full h-max">
                       <Link href="/auth/login">
-                        <div className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent text-base font-medium text-white shadow focus:outline-none" id="btn_login">
+                        <div
+                          className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent text-base font-medium text-white shadow focus:outline-none"
+                          id="btn_login"
+                        >
                           {/* <LoginIcon className="w-5 h-5" /> */}
                           <svg viewBox="0 0 24 24" width="16" height="16">
                             <path
@@ -181,21 +221,46 @@ const Sidebar = ({ children }) => {
               aria-label="Sidebar"
             >
               <div className="px-2 space-y-1">
-                <div className="group flex bg-[#3D00B7] hover:bg-[#3d00b7a1] text-white items-center w-full px-8 mb-2 py-2 text-sm leading-6 font-medium rounded-md duration-150 space-x-4">
-                  <svg viewBox="0 0 24 24" width="24" height="24">
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M12 1.25A3.75 3.75 0 0 0 8.25 5v1a4 4 0 0 0-3.862 3.263l-1.5 8A4 4 0 0 0 6.82 22h10.36a4 4 0 0 0 3.932-4.737l-1.5-8A4 4 0 0 0 15.75 6V5A3.75 3.75 0 0 0 12 1.25ZM14.25 6V5a2.25 2.25 0 0 0-4.5 0v1h4.5Z"
-                      fill="rgb(251 191 36)"
-                    ></path>
-                  </svg>
-                  {largeSidebarOpen && (
-                    <span className="ml-2 text-amber-500 font-bold">
-                      Marketplace
-                    </span>
-                  )}
-                </div>
+                <Link href="/">
+                  <div
+                    className={`cursor-pointer group flex ${
+                      router.pathname === "/"
+                        ? "bg-[#3D00B7] hover:bg-[#3d00b7a1]"
+                        : "hover:bg-[#3d00b7a1]"
+                    }  text-white items-center w-full px-8 mb-2 py-2 text-sm leading-6 font-medium rounded-md duration-150 space-x-4`}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="24"
+                      height="24"
+                      className={`${
+                        router.pathname !== "/" ? "text-slate-400" : null
+                      }`}
+                    >
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M12 1.25A3.75 3.75 0 0 0 8.25 5v1a4 4 0 0 0-3.862 3.263l-1.5 8A4 4 0 0 0 6.82 22h10.36a4 4 0 0 0 3.932-4.737l-1.5-8A4 4 0 0 0 15.75 6V5A3.75 3.75 0 0 0 12 1.25ZM14.25 6V5a2.25 2.25 0 0 0-4.5 0v1h4.5Z"
+                        fill={`${
+                          router.pathname === "/"
+                            ? "rgb(251 191 36)"
+                            : "currentColor"
+                        }`}
+                      ></path>
+                    </svg>
+                    {largeSidebarOpen && (
+                      <span
+                        className={`ml-2 ${
+                          router.pathname === "/"
+                            ? "text-amber-500"
+                            : "text-white"
+                        } font-bold`}
+                      >
+                        Marketplace
+                      </span>
+                    )}
+                  </div>
+                </Link>
                 {largeSidebarOpen && (
                   <span className="text-sm font-extrabold text-slate-400 px-8">
                     Collections
@@ -204,36 +269,39 @@ const Sidebar = ({ children }) => {
 
                 <div className="mt-4 pt-1 space-y-2">
                   {navigation.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      className={classNames(
-                        item.current
-                          ? "bg-[#3D00B7] text-white"
-                          : "text-cyan-100 hover:text-white hover:bg-[#3d00b7a1]",
-                        "group flex items-center p-2 text-sm leading-6 font-medium rounded-md duration-150 space-x-4"
-                      )}
-                      aria-current={item.current ? "page" : undefined}
-                    >
-                      <Tooltip
+                    <Link key={item.name} href={item.href}>
+                      <div
                         key={item.name}
-                        content={item.name}
-                        placement="right"
+                        className={classNames(
+                          router.pathname === item.href
+                            ? "bg-[#3D00B7] text-amber-500"
+                            : "text-cyan-100 hover:text-white hover:bg-[#3d00b7a1]",
+                          "cursor-pointer group flex items-center p-2 text-sm leading-6 font-medium rounded-md duration-150 space-x-4"
+                        )}
+                        aria-current={item.current ? "page" : undefined}
                       >
-                        <img
-                          className={`${
-                            item.customSize ? "w-8 h-8" : "h-5 w-8"
-                          } ${
-                            largeSidebarOpen ? "ml-5" : "ml-4"
-                          } flex-shrink-0`}
-                          alt="icon"
-                          src={item.icon}
-                        />
-                      </Tooltip>
-                      {largeSidebarOpen && (
-                        <span className="mr-4 font-extrabold">{item.name}</span>
-                      )}
-                    </a>
+                        <Tooltip
+                          key={item.name}
+                          content={item.name}
+                          placement="right"
+                        >
+                          <img
+                            className={`${
+                              item.customSize ? "w-8 h-8" : "h-5 w-8"
+                            } ${
+                              largeSidebarOpen ? "ml-5" : "ml-4"
+                            } flex-shrink-0`}
+                            alt="icon"
+                            src={item.icon}
+                          />
+                        </Tooltip>
+                        {largeSidebarOpen && (
+                          <span className="mr-4 font-extrabold">
+                            {item.name}
+                          </span>
+                        )}
+                      </div>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -244,7 +312,10 @@ const Sidebar = ({ children }) => {
             onClick={() => setOpenAuthModal(true)}
           >
             <div className="px-4 flex-shrink-0 w-full">
-              <div className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent  text-base font-medium text-white shadow focus:outline-none" id="btn_login">
+              <div
+                className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent  text-base font-medium text-white shadow focus:outline-none"
+                id="btn_login"
+              >
                 <svg viewBox="0 0 24 24" width="16" height="16">
                   <path
                     d="M6.75 3.25A4.75 4.75 0 0 0 2 8v8a4.75 4.75 0 0 0 4.75 4.75H14A4.75 4.75 0 0 0 18.75 16a.75.75 0 0 0-1.5 0A3.25 3.25 0 0 1 14 19.25H9.464A4.733 4.733 0 0 0 10.75 16V8c0-1.257-.488-2.4-1.286-3.25H14A3.25 3.25 0 0 1 17.25 8a.75.75 0 0 0 1.5 0A4.75 4.75 0 0 0 14 3.25H6.75Z"
