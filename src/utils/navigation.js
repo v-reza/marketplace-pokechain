@@ -1,7 +1,7 @@
 const navigation = [
   {
     name: "Pokemons",
-    href: "#",
+    href: "/pokemon",
     icon: "/assets/images/pikachu.png",
     current: false,
     customSize: true,
