@@ -19,8 +19,306 @@ import steel from "@/dist/type/steel.png";
 import unknown from "@/dist/type/unknown.png";
 import water from "@/dist/type/water.png";
 import axios from "axios";
+import awakening from "@/dist/items/awakening.webp";
+import fullHeal from "@/dist/items/full-heal.png";
+import masterBall from "@/dist/items/master-ball.png";
+import maxRevive from "@/dist/items/max-revive.png";
+import revive from "@/dist/items/revive.png";
+import mediumBall from "@/dist/items/medium-ball.png";
+import potion from "@/dist/items/potion.png";
+import protein from "@/dist/items/protein.png";
+import ultraBall from "@/dist/items/ultra-ball.png";
+import xAttack from "@/dist/items/x-attack.png";
+import xDefense from "@/dist/items/x-defense.png";
 export function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
+}
+
+export function getRarity(rarity) {
+  switch (rarity) {
+    case "common":
+      return {
+        name: "Common",
+        hex: "#8B989B",
+        svg: (
+          <svg
+            viewBox="0 0 24 24"
+            width="16"
+            height="16"
+            style={{ color: "#8B989B" }}
+          >
+            <path
+              d="M9.5 9.5S11 2 12 2s2.5 7.5 2.5 7.5S21 11 21 12s-6.5 2.5-6.5 2.5S13 22 12 22s-2.5-7.5-2.5-7.5S3 13 3 12s6.5-2.5 6.5-2.5Z"
+              fill="currentColor"
+            ></path>
+          </svg>
+        ),
+      };
+    case "rare":
+      return {
+        name: "Rare",
+        hex: "#2DC661",
+        svg: (
+          <svg
+            viewBox="0 0 24 24"
+            width="16"
+            height="16"
+            style={{ color: "#2DC661" }}
+          >
+            <path
+              d="M9.5 9.5S11 2 12 2s2.5 7.5 2.5 7.5S21 11 21 12s-6.5 2.5-6.5 2.5S13 22 12 22s-2.5-7.5-2.5-7.5S3 13 3 12s6.5-2.5 6.5-2.5Z"
+              fill="currentColor"
+            ></path>
+          </svg>
+        ),
+      };
+    case "epic":
+      return {
+        name: "Epic",
+        hex: "#26C0CA",
+        svg: (
+          <svg
+            viewBox="0 0 24 24"
+            width="16"
+            height="16"
+            style={{ color: "#26C0CA" }}
+          >
+            <path
+              d="M9.5 9.5S11 2 12 2s2.5 7.5 2.5 7.5S21 11 21 12s-6.5 2.5-6.5 2.5S13 22 12 22s-2.5-7.5-2.5-7.5S3 13 3 12s6.5-2.5 6.5-2.5Z"
+              fill="currentColor"
+            ></path>
+          </svg>
+        ),
+      };
+    case "legendary":
+      return {
+        name: "Legendary",
+        hex: "#DC8A0C",
+        svg: (
+          <svg
+            viewBox="0 0 24 24"
+            width="16"
+            height="16"
+            style={{ color: "#DC8A0C" }}
+          >
+            <path
+              d="M9.5 9.5S11 2 12 2s2.5 7.5 2.5 7.5S21 11 21 12s-6.5 2.5-6.5 2.5S13 22 12 22s-2.5-7.5-2.5-7.5S3 13 3 12s6.5-2.5 6.5-2.5Z"
+              fill="currentColor"
+            ></path>
+          </svg>
+        ),
+      };
+    default:
+      return "bg-gray-500";
+  }
+}
+
+export function getItemType(type) {
+  switch (type) {
+    case "awakening": {
+      return {
+        img: awakening,
+        hex: "#90D2E4",
+        rgba: "rgba(144, 210, 228, 0.35)",
+        detail: {
+          name: "Awakening",
+          effect: "Awakens a Pokémon.",
+          rarity: getRarity("epic"),
+          required: {
+            name: "Max Level Pokémon",
+          },
+        },
+      };
+    }
+    case "full-heal": {
+      return {
+        img: fullHeal,
+        hex: "#BBB300",
+        rgba: "rgba(187, 179, 0, 0.35)",
+        detail: {
+          name: "Full Heal",
+          effect: "Fully heals a Pokémon.",
+          rarity: getRarity("rare"),
+          required: {
+            name: "Pokémon Health is less than 50%",
+            value: 0.5,
+          },
+        },
+      };
+    }
+    case "master-ball": {
+      return {
+        img: masterBall,
+        hex: "#AE61E8",
+        rgba: "rgba(174, 97, 232, 0.35)",
+        detail: {
+          name: "Master Ball",
+          effect: "Increase your level pokemon",
+          rarity: getRarity("common"),
+          required: {
+            name: "Pokémon is level 1-3",
+            value: {
+              level: {
+                1: 300,
+                2: 200,
+                3: 100,
+              },
+            },
+          },
+        },
+      };
+    }
+    case "max-revive": {
+      return {
+        img: maxRevive,
+        hex: "#9FA138",
+        rgba: "rgba(159, 161, 56, 0.35)",
+        detail: {
+          name: "Max Revive",
+          effect: "Revives a Pokémon with full health.",
+          rarity: getRarity("legendary"),
+          required: {
+            name: "Pokémon is fainted / dead",
+          },
+        },
+      };
+    }
+    case "revive": {
+      return {
+        img: revive,
+        hex: "#FEF789",
+        rgba: "rgba(254, 247, 137, 0.35)",
+        detail: {
+          name: "Revive",
+          effect: "Revives a Pokémon with half health.",
+          rarity: getRarity("epic"),
+          required: {
+            name: "Pokémon is fainted / dead",
+          },
+        },
+      };
+    }
+    case "medium-ball": {
+      return {
+        img: mediumBall,
+        hex: "#5BB2DD",
+        rgba: "rgba(91, 178, 221, 0.35)",
+        detail: {
+          name: "Medium Ball",
+          effect: "Increase your level pokemon",
+          rarity: getRarity("epic"),
+          required: {
+            name: "Pokémon is level 1-6",
+            value: {
+              level: {
+                1: 800,
+                2: 700,
+                3: 600,
+                4: 500,
+                5: 400,
+                6: 300,
+              },
+            },
+          },
+        },
+      };
+    }
+    case "potion": {
+      return {
+        img: potion,
+        hex: "#CA30EF",
+        rgba: "rgba(202, 48, 239, 0.35)",
+        detail: {
+          name: "Potion",
+          effect: "Heals a Pokémon by 20 HP.",
+          rarity: getRarity("common"),
+          required: {
+            name: "Pokémon Health is less than 100%",
+            value: 0.2,
+          },
+        },
+      };
+    }
+    case "protein": {
+      return {
+        img: protein,
+        hex: "#955C36",
+        rgba: "rgba(149, 92, 54, 0.35)",
+        detail: {
+          name: "Protein",
+          effect: "Increase your 10 attack, 20 defense all pokemon",
+          rarity: getRarity("common"),
+          required: {
+            name: "First start game",
+            value: {
+              attack: 10,
+              defense: 20,
+            },
+          },
+        },
+      };
+    }
+    case "ultra-ball": {
+      return {
+        img: ultraBall,
+        hex: "#FED722",
+        rgba: "rgba(254, 215, 34, 0.35)",
+        detail: {
+          name: "Ultra Ball",
+          effect: "Increase your level pokemon",
+          rarity: getRarity("legendary"),
+          required: {
+            name: "Pokémon is level 6-10",
+            value: {
+              level: {
+                6: 800,
+                7: 700,
+                8: 600,
+                9: 500,
+                10: 400,
+              },
+            },
+          },
+        },
+      };
+    }
+    case "x-attack": {
+      return {
+        img: xAttack,
+        hex: "#E198A5",
+        rgba: "rgba(225, 152, 165, 0.35)",
+        detail: {
+          name: "X Attack",
+          effect: "Increase your 20 attack pokemon",
+          rarity: getRarity("rare"),
+          required: {
+            name: "Game is start",
+            value: {
+              attack: 20,
+            },
+          },
+        },
+      };
+    }
+    case "x-defense": {
+      return {
+        img: xDefense,
+        hex: "#4E5399",
+        rgba: "rgba(78, 83, 153, 0.35)",
+        detail: {
+          name: "X Defense",
+          effect: "Increase your 20 defense pokemon",
+          rarity: getRarity("rare"),
+          required: {
+            name: "Game is start",
+            value: {
+              defense: 20,
+            },
+          },
+        },
+      };
+    }
+  }
 }
 
 export function getPokemonElementType(type) {
