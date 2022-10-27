@@ -8,6 +8,7 @@ import {
 import React, { Fragment, useEffect, useState } from "react";
 import {
   classNames,
+  getItemType,
   getPokemonElementType,
   getPriceToToken,
 } from "@/utils/constant";
@@ -17,8 +18,8 @@ import Image from "next/image";
 import bgToken from "@/dist/token.png";
 import { useRouter } from "next/router";
 
-const ListPokemon = () => {
-  
+const ListItems = (props) => {
+  const { items } = props;
   const filter = [
     { id: 1, name: "Lowest Price", active: true },
     { id: 2, name: "Highest Price", active: false },
@@ -69,7 +70,7 @@ const ListPokemon = () => {
     <div>
       <div className="relative py-7 px-8 lg:px-12">
         <div className="pt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <span className="text-white font-bold text-lg">582,020 Pokemon</span>
+          <span className="text-white font-bold text-lg">365,170 Items</span>
           <Listbox value={selected} onChange={setSelected}>
             {({ open }) => (
               <>
@@ -142,7 +143,7 @@ const ListPokemon = () => {
         </div>
         <div className="mt-4 pb-10 mx-auto max-w-md px-4 grid gap-4 lg:gap-12 sm:max-w-4xl sm:px-6 lg:px-8 sm:grid-cols-2  md:max-w-5xl md:grid-cols-2  xl:grid-cols-4 lg:max-w-full">
           {!loading
-            ? pokemon.map((item, index) => (
+            ? items.map((item, index) => (
                 <div
                   className="flex flex-col items-start space-y-2"
                   key={index}
@@ -155,7 +156,7 @@ const ListPokemon = () => {
                       className={`h-56 w-full bg-opacity-25 rounded-t-lg shadow-lg `}
                       style={{
                         backgroundImage: `linear-gradient(180deg, rgba(175,219,27,0),${
-                          getPokemonElementType(item.types[0].type.name).rgba
+                          getItemType(item.type).rgba
                         })`,
                       }}
                     >
@@ -165,61 +166,29 @@ const ListPokemon = () => {
                             <div
                               className={`flex items-center  bg-slate-800 rounded-md px-2 w-max py-1 space-x-1`}
                             >
-                              {item.types.map((element, index) => {
-                                const elementImage = getPokemonElementType(
-                                  element.type.name
-                                );
-                                return (
-                                  <div
-                                    key={index}
-                                    className="text-sm font-extrabold text-white "
-                                  >
-                                    <Tooltip
-                                      placement="top"
-                                      content={
-                                        <span className="capitalize">
-                                          {element.type.name}
-                                        </span>
-                                      }
-                                    >
-                                      <Image
-                                        alt={index}
-                                        src={elementImage.img}
-                                        width={20}
-                                        height={20}
-                                        style={{ marginTop: "1px" }}
-                                      />
-                                    </Tooltip>
-                                  </div>
-                                );
-                              })}
+                              <div
+                                key={index}
+                                className="text-sm font-extrabold text-white "
+                              >
+                                <Tooltip
+                                  placement="top"
+                                  content={
+                                    <span className="capitalize">
+                                      {getItemType(item.type).detail.rarity.name}
+                                    </span>
+                                  }
+                                >
+                                 {getItemType(item.type).detail.rarity.svg} 
+                                </Tooltip>
+                              </div>
 
                               <div
-                                className={`flex items-center -mt-1 text-md !ml-2 ${
-                                  item.types.length > 0 &&
-                                  "text-transparent bg-clip-text"
-                                }`}
-                                style={
-                                  item.types.length === 1
-                                    ? {
-                                        color: getPokemonElementType(
-                                          item.types[0].type.name
-                                        ).hex,
-                                      }
-                                    : {
-                                        backgroundImage: `linear-gradient(to right, ${
-                                          getPokemonElementType(
-                                            item.types[0].type.name
-                                          ).hex
-                                        }, ${
-                                          getPokemonElementType(
-                                            item.types[1].type.name
-                                          ).hex
-                                        })`,
-                                      }
-                                }
+                                className={`flex items-center  text-sm font-extrabold !ml-2 `}
+                                style={{
+                                  color: getItemType(item.type).detail.rarity.hex,
+                                }}
                               >
-                                #{Math.floor(Math.random() * 900000)}
+                                {getItemType(item.type).detail.rarity.name}
                               </div>
                             </div>
                           </div>
@@ -228,8 +197,8 @@ const ListPokemon = () => {
                       <div className="flex flex-col items-center justify-center">
                         <div className="flex flex-col items-center justify-center">
                           <Image
-                            alt="pokemon"
-                            src={item.sprites.other.home.front_default}
+                            alt="item"
+                            src={getItemType(item.type).img}
                             width={100}
                             height={100}
                             blurDataURL
@@ -260,70 +229,14 @@ const ListPokemon = () => {
                         <div className="flex flex-row justify-between">
                           <div className="flex flex-col">
                             <div className="flex items-center space-x-1 ">
-                              <span className="text-md font-medium text-white">
-                                Pokemon
+                              <span className="text-md font-medium text-white capitalize">
+                                {item.type.replace("-", " ")}
                               </span>
                               <span className="text-md font-medium text-white">
                                 #{Math.floor(Math.random() * 900000)}
                               </span>
                             </div>
                           </div>
-                          <Tooltip
-                            placement="top"
-                            content={
-                              <div className="w-72 h-40 ">
-                                <div className="px-4">
-                                  <div className="flex flex-col">
-                                    <span className="text-md font-bold text-slate-300 capitalize">
-                                      Pokemon Name : {item.name}
-                                    </span>
-                                    <div className="mt-2 flex flex-col">
-                                      <span className="text-md font-bold text-slate-300 capitalize">
-                                        Stats
-                                      </span>
-                                      <span className="text-md font-bold text-slate-300 capitalize">
-                                        Element :{" "}
-                                        {item.types
-                                          .map((el, index) => (
-                                            <span key={index}>
-                                              {el.type.name}{" "}
-                                            </span>
-                                          ))
-                                          .reduce((prev, curr) => [
-                                            prev,
-                                            ", ",
-                                            curr,
-                                          ])}
-                                      </span>
-                                      <span className="text-md font-bold text-slate-300 capitalize">
-                                        Health : {item.stats[0].base_stat}
-                                      </span>
-                                      <span className="text-md font-bold text-slate-300 capitalize">
-                                        Attack : {item.stats[1].base_stat}
-                                      </span>
-                                      <span className="text-md font-bold text-slate-300 capitalize">
-                                        Defense : {item.stats[2].base_stat}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            }
-                          >
-                            <svg
-                              viewBox="0 0 24 24"
-                              width="20"
-                              height="20"
-                              className="text-slate-400 cursor-pointer"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M9.922 2.571a4.067 4.067 0 0 1 4.156 0l4.844 2.868C20.208 6.201 21 7.61 21 9.132v5.736c0 1.523-.792 2.931-2.078 3.693l-4.844 2.868a4.067 4.067 0 0 1-4.156 0L5.078 18.56C3.792 17.799 3 16.39 3 14.868V9.132c0-1.523.792-2.931 2.078-3.693l4.844-2.868ZM13 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-2 2.25a.75.75 0 0 0 0 1.5h.25V17a.75.75 0 0 0 1.5 0v-7a.75.75 0 0 0-.75-.75h-1Z"
-                                fill="currentColor"
-                              ></path>
-                            </svg>
-                          </Tooltip>
                         </div>
                       </div>
                     </div>
@@ -383,4 +296,4 @@ const ListPokemon = () => {
   );
 };
 
-export default ListPokemon;
+export default ListItems;

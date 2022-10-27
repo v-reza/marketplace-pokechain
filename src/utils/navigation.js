@@ -8,7 +8,7 @@ const navigation = [
   },
   {
     name: "Items",
-    href: "#",
+    href: "/items",
     icon: "/assets/images/pokeball.png",
     current: false,
   },
