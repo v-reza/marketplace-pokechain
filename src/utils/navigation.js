@@ -21,7 +21,7 @@ const navigation = [
   },
   {
     name: "Tokens",
-    href: "#",
+    href: "/token",
     icon: "/assets/images/token.png",
     current: false,
     customSize: true,
