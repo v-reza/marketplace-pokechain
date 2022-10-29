@@ -14,7 +14,7 @@ const navigation = [
   },
   {
     name: "Bundles",
-    href: "#",
+    href: "/bundles",
     icon: "/assets/images/tab-bundle.png",
     current: false,
     customSize: true,
