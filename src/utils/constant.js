@@ -30,6 +30,7 @@ import protein from "@/dist/items/protein.png";
 import ultraBall from "@/dist/items/ultra-ball.png";
 import xAttack from "@/dist/items/x-attack.png";
 import xDefense from "@/dist/items/x-defense.png";
+import token from "@/dist/token.png";
 export function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -390,6 +391,10 @@ export function getPokemonElementType(type) {
     default:
       return null;
   }
+}
+
+export function getTokenType() {
+  return { img: token, hex: "#E5D8C2", rgba: "rgba(229, 216, 194, 0.35)" };
 }
 
 export function getPriceToToken(price) {
