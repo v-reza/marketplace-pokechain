@@ -2,23 +2,65 @@
 import { EyeIcon, EyeOffIcon } from "@heroicons/react/solid";
 import Head from "next/head";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { register } from "@/redux/action/authAction";
+import { Spinner } from "flowbite-react";
+import { useDispatch } from "react-redux";
+import { setNotification } from "@/redux/action/notificationAction";
+
 export default function Register() {
   const [visiblePassword, setVisiblePassword] = useState(false);
   const [visiblePasswordConfirmation, setVisiblePasswordConfirmation] =
     useState(false);
   const [form, setForm] = useState({
-    fullname: "",
+    username: "",
     email: "",
     password: "",
-    passwordConfirmation: "",
+    confirmPassword: "",
   });
+  const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setIsMessage] = useState(null);
+
+  const dispatch = useDispatch();
+
+  const processAction = ({ error, loading, message }) => {
+    setError(error);
+    setIsLoading(loading);
+    setIsMessage(message);
+  };
+
+  const clearState = () => {
+    if (!error) {
+      setForm({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+    }
+  };
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+
+    register(form, processAction);
+  };
+
+  useEffect(() => {
+    clearState();
+    if (message !== null) {
+      setNotification(dispatch, { message , error });
+    }
+  }, [error, message]);
+
   return (
     <>
       <Head>
         <title>Pokechain | Sign up</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
+
       <div
         className="min-h-screen flex bg-gray-900"
         style={{
@@ -48,10 +90,10 @@ export default function Register() {
                   <div className="mt-1 grid grid-cols-1 gap-3">
                     <button
                       type="button"
-                      class="text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2"
+                      className="text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2"
                     >
                       <svg
-                        class="mr-2 -ml-1 w-4 h-4"
+                        className="mr-2 -ml-1 w-4 h-4"
                         aria-hidden="true"
                         focusable="false"
                         data-prefix="fab"
@@ -83,24 +125,24 @@ export default function Register() {
               </div>
 
               <div className="mt-6">
-                <form className="space-y-6" action="#" method="POST">
+                <form className="space-y-6" onSubmit={handleRegister}>
                   <div>
                     <label
                       htmlFor="email"
                       className="block text-sm font-medium text-slate-300"
                     >
-                      Full Name
+                      Username
                     </label>
                     <div className="mt-1">
                       <input
-                        id="fullname"
-                        name="fullname"
+                        id="username"
+                        name="username"
                         type="text"
                         autoComplete="email"
                         required
-                        value={form.fullname}
+                        value={form.username}
                         onChange={(e) =>
-                          setForm({ ...form, fullname: e.target.value })
+                          setForm({ ...form, username: e.target.value })
                         }
                         className="bg-slate-700/20 appearance-none block w-full px-3 text-white py-2 border border-slate-600 rounded-md shadow-sm placeholder-transparent focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       />
@@ -199,11 +241,11 @@ export default function Register() {
                       <input
                         type={visiblePasswordConfirmation ? "text" : "password"}
                         required
-                        value={form.passwordConfirmation}
+                        value={form.confirmPassword}
                         onChange={(e) =>
                           setForm({
                             ...form,
-                            passwordConfirmation: e.target.value,
+                            confirmPassword: e.target.value,
                           })
                         }
                         className="bg-slate-700/20 appearance-none block w-full px-3 text-white py-2 border border-slate-600 rounded-md shadow-sm placeholder-transparent focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -231,7 +273,14 @@ export default function Register() {
                       type="submit"
                       className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white  bg-[#3D00B7] hover:bg-[#3d00b7a1] focus:outline-none"
                     >
-                      Sign up
+                      {isLoading ? (
+                        <Spinner
+                          color="gray"
+                          aria-label="Purple spinner example"
+                        />
+                      ) : (
+                        "Sign up"
+                      )}
                     </button>
                   </div>
                 </form>

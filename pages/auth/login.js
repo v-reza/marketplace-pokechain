@@ -1,12 +1,63 @@
 /* eslint-disable @next/next/no-img-element */
 import Head from "next/head";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { login } from "@/redux/action/authAction";
+import { useDispatch } from "react-redux";
+import { Spinner } from "flowbite-react";
+import { useRouter } from "next/router";
+import { setNotification } from "@/redux/action/notificationAction";
+import useAuth from "@/hooks/useAuth";
+
 export default function Login() {
   const [form, setForm] = useState({
-    usernameORemail: "",
+    userOrEmail: "",
     password: "",
   });
+  const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setIsMessage] = useState(null);
+
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const { accessToken } = useAuth();
+
+  const processAction = ({ error, loading, message }) => {
+    setError(error);
+    setIsLoading(loading);
+    setIsMessage(message);
+  };
+
+  const clearState = () => {
+    if (!error) {
+      setForm({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+    }
+  };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    login(dispatch, form, processAction);
+  };
+
+  useEffect(() => {
+    if (accessToken) {
+      router.push("/");
+    }
+  }, [accessToken]);
+
+  useEffect(() => {
+    if (message) {
+      setNotification(dispatch, { message, error });
+    }
+    clearState();
+  }, [error, message]);
+
   return (
     <>
       <Head>
@@ -42,10 +93,10 @@ export default function Login() {
                   <div className="mt-1 grid grid-cols-1 gap-3">
                     <button
                       type="button"
-                      class="text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2"
+                      className="text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2"
                     >
                       <svg
-                        class="mr-2 -ml-1 w-4 h-4"
+                        className="mr-2 -ml-1 w-4 h-4"
                         aria-hidden="true"
                         focusable="false"
                         data-prefix="fab"
@@ -77,7 +128,7 @@ export default function Login() {
               </div>
 
               <div className="mt-6">
-                <form className="space-y-6" action="#" method="POST">
+                <form className="space-y-6" onSubmit={handleLogin}>
                   <div>
                     <label
                       htmlFor="email"
@@ -92,9 +143,9 @@ export default function Login() {
                         type="text"
                         autoComplete="email"
                         required
-                        value={form.usernameORemail}
+                        value={form.userOrEmail}
                         onChange={(e) =>
-                          setForm({ ...form, usernameORemail: e.target.value })
+                          setForm({ ...form, userOrEmail: e.target.value })
                         }
                         className="appearance-none block w-full px-3 py-1 sm:py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       />
@@ -144,7 +195,14 @@ export default function Login() {
                       type="submit"
                       className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white  bg-[#3D00B7] hover:bg-[#3d00b7a1] focus:outline-none"
                     >
-                      Sign in
+                      {isLoading ? (
+                        <Spinner
+                          color="gray"
+                          aria-label="Purple spinner example"
+                        />
+                      ) : (
+                        "Sign in"
+                      )}
                     </button>
                   </div>
                 </form>
@@ -163,3 +221,4 @@ export default function Login() {
     </>
   );
 }
+

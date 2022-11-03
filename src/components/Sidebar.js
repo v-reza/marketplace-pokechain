@@ -10,6 +10,7 @@ import { navigation } from "@/utils/navigation";
 import LoginModal from "./AuthPages/Login";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
 
 const SidebarMainContent = ({ children }) => {
   return <>{children}</>;
@@ -19,6 +20,7 @@ const Sidebar = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [largeSidebarOpen, setLargeSidebarOpen] = useState(true);
   const [openAuthModal, setOpenAuthModal] = useState(false);
+  const {currentUser} = useSelector(state=>state.user)
   const router = useRouter();
 
   return (
