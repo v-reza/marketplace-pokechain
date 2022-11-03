@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { Spinner } from "flowbite-react";
 import { useRouter } from "next/router";
 import { setNotification } from "@/redux/action/notificationAction";
+import { useCookies } from "react-cookie";
 import useAuth from "@/hooks/useAuth";
 
 export default function Login() {
@@ -17,15 +18,19 @@ export default function Login() {
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setIsMessage] = useState(null);
+  const [authCookie, setAuthCookie] = useCookies([
+    "access_token",
+  ]);
 
   const dispatch = useDispatch();
   const router = useRouter();
   const { accessToken } = useAuth();
 
-  const processAction = ({ error, loading, message }) => {
+  const processAction = ({ error, loading, message, access_token }) => {
     setError(error);
     setIsLoading(loading);
     setIsMessage(message);
+    setAuthCookie("access_token", access_token, { path: "/" });
   };
 
   const clearState = () => {
@@ -41,7 +46,6 @@ export default function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-
     login(dispatch, form, processAction);
   };
 
@@ -55,7 +59,9 @@ export default function Login() {
     if (message) {
       setNotification(dispatch, { message, error });
     }
-    clearState();
+    return () => {
+      clearState();
+    }
   }, [error, message]);
 
   return (
@@ -221,4 +227,3 @@ export default function Login() {
     </>
   );
 }
-

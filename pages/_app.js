@@ -2,10 +2,9 @@ import Sidebar from "@/components/Sidebar";
 import Head from "next/head";
 import Notification from "@/components/Notification";
 import { Provider } from "react-redux";
-import { store, persistor , wrapper } from "@/redux/store";
+import { store, persistor, wrapper } from "@/redux/store";
 import { PersistGate } from "redux-persist/integration/react";
 import "../styles/globals.css";
-import WrapperConnect from "@/components/ConfigPages/WrapperConnect";
 
 function MyApp({ Component, pageProps, hiddenSidebar }) {
   return (
@@ -14,7 +13,6 @@ function MyApp({ Component, pageProps, hiddenSidebar }) {
         <Head>
           <meta name="google" content="notranslate" />
         </Head>
-        <WrapperConnect>
         <Notification />
         {hiddenSidebar ? (
           <Component {...pageProps} />
@@ -25,21 +23,24 @@ function MyApp({ Component, pageProps, hiddenSidebar }) {
             </Sidebar.MainContent>
           </Sidebar>
         )}
-        </WrapperConnect>
       </PersistGate>
     </Provider>
   );
 }
 
-MyApp.getInitialProps = async (appContext) => {
-  const { pathname } = appContext.ctx;
-
-  return {
-    hiddenSidebar:
-      pathname === "/auth/login" || pathname === "/auth/register"
-        ? true
-        : false,
-  };
-};
+MyApp.getInitialProps = wrapper.getInitialPageProps(
+  (store) => async (appContext) => {
+    const { pathname, store } = appContext.ctx;
+    const accessToken = appContext.ctx.req?.cookies?.access_token
+    console.log(accessToken);
+    
+    return {
+      hiddenSidebar:
+        pathname === "/auth/login" || pathname === "/auth/register"
+          ? true
+          : false,
+    };
+  }
+);
 
 export default wrapper.withRedux(MyApp);

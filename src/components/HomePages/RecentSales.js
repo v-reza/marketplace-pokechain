@@ -6,6 +6,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/solid";
 import { getPokemonElementType, getPriceToToken } from "@/utils/constant";
 import axios from "axios";
 import { Tooltip } from "flowbite-react";
+import { motion } from "framer-motion"
 const RecentSales = () => {
   const itemTopSales = [
     {
@@ -151,8 +152,9 @@ const RecentSales = () => {
                       className="flex flex-col items-start space-y-2"
                       key={index}
                     >
-                      <div
+                      <motion.div
                         key={index}
+                        whileHover={{ scale: 1.05 }}
                         className="shadow-lg hover:shadow-xl flex flex-col rounded-lg w-full bg-gray-700 border border-slate-600  hover:border-slate-500 cursor-pointer"
                       >
                         <div
@@ -337,7 +339,7 @@ const RecentSales = () => {
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                       <span className="px-2 text-slate-400 text-xs font-extrabold">
                         {Math.floor(Math.random() * 60) + " "}minute ago
                       </span>

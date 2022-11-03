@@ -37,16 +37,7 @@ export const store = configureStore({
     }),
 });
 
-export const makeStore = () =>
-  configureStore({
-    reducer: rootReducer,
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-        },
-      }),
-  });
-
+const makeStore = () => store
+  
 export let persistor = persistStore(store);
 export const wrapper = createWrapper(makeStore);

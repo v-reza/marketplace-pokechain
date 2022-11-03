@@ -11,6 +11,7 @@ export const login = async (dispatch, data, processAction) => {
     error: false,
     loading: true,
     message: null,
+    access_token: null,
   });
   try {
     const response = await publicRequest.post("/auth/login", data);
@@ -24,6 +25,7 @@ export const login = async (dispatch, data, processAction) => {
       error: false,
       loading: false,
       message: msg,
+      access_token: accessToken,
     });
   } catch (e) {
     const { msg } = e.response.data;
@@ -32,11 +34,12 @@ export const login = async (dispatch, data, processAction) => {
       error: true,
       loading: false,
       message: msg,
+      access_token: null,
     });
   }
 };
 
-export const register = async (data,processAction) => {
+export const register = async (data, processAction) => {
   processAction({
     error: false,
     loading: true,
