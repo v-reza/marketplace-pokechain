@@ -3,8 +3,14 @@ import OverallStats from "@/components/HomePages/OverallStats";
 import TopSales from "@/components/HomePages/TopSales";
 import RecentSales from "@/components/HomePages/RecentSales";
 import RecentListings from "@/components/HomePages/RecentListings";
+import useUser from "@/hooks/useUser";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 export default function IndexPages() {
+  // const { currentUser } = useUser();
+  // const { accessToken } = useSelector(state => state.auth)
+  // console.log("accessToken => ", accessToken)
   return (
     <>
       <div className="h-screen bg-gray-900 min-h-full flex-1">

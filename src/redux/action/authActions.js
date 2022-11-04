@@ -53,7 +53,7 @@ export const register = async (data, processAction) => {
 
 export const logout = async (processAction) => {
   const response = await publicRequest.delete("/auth/logout");
-  console.log(response)
+  console.log(response);
   // const { msg } = response.data;
   // processAction({
   //   error: false,

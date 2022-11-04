@@ -25,13 +25,11 @@ export default function Login() {
     setError(error);
     setIsLoading(loading);
     setIsMessage(message);
-    setAuthCookie("access_token", access_token, { path: "/",
-    httpOnly:true
-  });
+    setAuthCookie("access_token", access_token, { path: "/" });
   };
 
   const clearState = () => {
-    if (error == false) {
+    if (!error) {
       setForm({
         userOrEmail: "",
         password: "",
@@ -42,22 +40,15 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     await login(dispatch, form, processAction);
-     redirectPage(e)
+    
   };
 
-  const redirectPage = (e)=>{
-    
-    e.preventDefault()
-    window.location.href="/"
-    
-    
-  }
-
-  // useEffect(() => {
-  //   if (authCookie.access_token != "null" && authCookie.access_token != null) {
-  //     redirectPage()
-  //   }
-  // }, [authCookie]);
+  useEffect(() => {
+    if (authCookie.access_token != "null" && authCookie.access_token != null) {
+      router.push("/");
+      localStorage.setItem("access_token", authCookie.access_token);
+    }
+  }, [authCookie]);
 
   useEffect(() => {
     clearState();

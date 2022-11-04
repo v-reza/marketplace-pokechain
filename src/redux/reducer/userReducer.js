@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { HYDRATE } from "next-redux-wrapper";
+import jwtDecode from "jwt-decode";
 
 const userSlice = createSlice({
   name: "user",
@@ -8,13 +9,28 @@ const userSlice = createSlice({
   },
   reducers: {
     setUser: (state, action) => {
-      state.currentUser = action.payload.user
+      state.currentUser = action.payload.user;
     },
   },
   extraReducers: {
     [HYDRATE]: (state, action) => {
-      console.log('HYDRATE'+action.payload)
-      state.currentUser = action.payload.user
+      if (typeof window !== "undefined") {
+        const access_token = localStorage.getItem("access_token");
+
+        if (access_token) {
+          const { userId, email, username, exp, profile, refresh_token } =
+            jwtDecode(access_token);
+          const data = {
+            userId,
+            email,
+            username,
+            exp,
+            profile,
+            refresh_token,
+          };
+          state.currentUser = data;
+        }
+      }
     },
   },
 });
