@@ -3,11 +3,8 @@ import OverallStats from "@/components/HomePages/OverallStats";
 import TopSales from "@/components/HomePages/TopSales";
 import RecentSales from "@/components/HomePages/RecentSales";
 import RecentListings from "@/components/HomePages/RecentListings";
-import useAuth from "@/hooks/useAuth";
 
 export default function IndexPages() {
-  const { accessToken } = useAuth();
-  console.log(accessToken)
   return (
     <>
       <div className="h-screen bg-gray-900 min-h-full flex-1">

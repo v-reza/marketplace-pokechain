@@ -3,10 +3,10 @@ import { EyeIcon, EyeOffIcon } from "@heroicons/react/solid";
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { register } from "@/redux/action/authAction";
+import { register } from "@/redux/action/authActions";
 import { Spinner } from "flowbite-react";
 import { useDispatch } from "react-redux";
-import { setNotification } from "@/redux/action/notificationAction";
+import { setNotification } from "@/redux/action/notificationActions";
 
 export default function Register() {
   const [visiblePassword, setVisiblePassword] = useState(false);
@@ -18,10 +18,9 @@ export default function Register() {
     password: "",
     confirmPassword: "",
   });
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setIsMessage] = useState(null);
-
   const dispatch = useDispatch();
 
   const processAction = ({ error, loading, message }) => {
@@ -31,7 +30,7 @@ export default function Register() {
   };
 
   const clearState = () => {
-    if (!error) {
+    if (error == false) {
       setForm({
         username: "",
         email: "",
@@ -43,16 +42,15 @@ export default function Register() {
 
   const handleRegister = (e) => {
     e.preventDefault();
-
     register(form, processAction);
   };
 
   useEffect(() => {
     clearState();
-    if (message !== null) {
-      setNotification(dispatch, { message , error });
+    if (message) {
+      setNotification(dispatch, { message, error });
     }
-  }, [error, message]);
+  }, [message]);
 
   return (
     <>
@@ -298,4 +296,23 @@ export default function Register() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  if (
+    context.req.cookies.access_token != "null" &&
+    context.req.cookies.access_token != null
+  ) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/",
+      },
+    };
+  }
+  return {
+    props: {
+      data: null,
+    },
+  };
 }

@@ -2,29 +2,24 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { login } from "@/redux/action/authAction";
+import { login } from "@/redux/action/authActions";
 import { useDispatch } from "react-redux";
 import { Spinner } from "flowbite-react";
 import { useRouter } from "next/router";
-import { setNotification } from "@/redux/action/notificationAction";
+import { setNotification } from "@/redux/action/notificationActions";
 import { useCookies } from "react-cookie";
-import useAuth from "@/hooks/useAuth";
 
 export default function Login() {
   const [form, setForm] = useState({
     userOrEmail: "",
     password: "",
   });
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setIsMessage] = useState(null);
-  const [authCookie, setAuthCookie] = useCookies([
-    "access_token",
-  ]);
-
+  const [authCookie, setAuthCookie] = useCookies(["access_token"]);
   const dispatch = useDispatch();
   const router = useRouter();
-  const { accessToken } = useAuth();
 
   const processAction = ({ error, loading, message, access_token }) => {
     setError(error);
@@ -34,12 +29,10 @@ export default function Login() {
   };
 
   const clearState = () => {
-    if (!error) {
+    if (error == false) {
       setForm({
-        username: "",
-        email: "",
+        userOrEmail: "",
         password: "",
-        confirmPassword: "",
       });
     }
   };
@@ -50,19 +43,17 @@ export default function Login() {
   };
 
   useEffect(() => {
-    if (accessToken) {
+    if (authCookie.access_token != "null" && authCookie.access_token != null) {
       router.push("/");
     }
-  }, [accessToken]);
+  }, [authCookie]);
 
   useEffect(() => {
+    clearState();
     if (message) {
       setNotification(dispatch, { message, error });
     }
-    return () => {
-      clearState();
-    }
-  }, [error, message]);
+  }, [message]);
 
   return (
     <>
@@ -226,4 +217,23 @@ export default function Login() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  if (
+    context.req.cookies.access_token != "null" &&
+    context.req.cookies.access_token != null
+  ) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/",
+      },
+    };
+  }
+  return {
+    props: {
+      data: null,
+    },
+  };
 }

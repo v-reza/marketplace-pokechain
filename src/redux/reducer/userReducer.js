@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { HYDRATE } from "next-redux-wrapper";
 
 const userSlice = createSlice({
   name: "user",
@@ -6,18 +7,20 @@ const userSlice = createSlice({
     currentUser: null,
   },
   reducers: {
-    loadIsStart: (state) => {
-      state.currentUser = null;
+    setUser: (state, action) => {
+      state.currentUser = action.payload.user
     },
-    loadIsSuccess: (state, action) => {
-      state.currentUser = action.payload.user;
-    },
-    loadIsFailed: (state) => {
-      state.currentUser = null;
+  },
+  extraReducers: {
+    [HYDRATE]: (state, action) => {
+      console.log('HYDRATE'+action.payload)
+      state.currentUser = action.payload.user
     },
   },
 });
 
-export const { loadIsStart, loadIsSuccess, loadIsFailed } = userSlice.actions;
+export const { setUser } = userSlice.actions;
+
+export const selectUserState = (state) => state.user;
 
 export default userSlice.reducer;
