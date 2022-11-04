@@ -8,15 +8,11 @@ import jwt_decode from "jwt-decode";
 import "../styles/globals.css";
 import { setDecodeUser } from "@/redux/action/userActions";
 import { setUser } from "@/redux/reducer/userReducer";
-import { useEffect } from "react";
 
-function MyApp({ Component, pageProps, hiddenSidebar, user, ...rest }) {
-  // const dispatch = useDispatch();
-  // const { store, props } = wrapper.useWrappedStore(rest);
-  // console.log(store.getState((state)=>state).user);
-
-  // dispatch(setUser({ user }));
-
+function MyApp({ Component, pageProps, hiddenSidebar, user }) {
+  console.log(user);
+  const dispatch = useDispatch();
+  dispatch(setUser({ user }));
   return (
     <Provider store={store}>
       <PersistGate loading="" persistor={persistor}>

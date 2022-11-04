@@ -25,7 +25,9 @@ export default function Login() {
     setError(error);
     setIsLoading(loading);
     setIsMessage(message);
-    setAuthCookie("access_token", access_token, { path: "/" });
+    setAuthCookie("access_token", access_token, { path: "/",
+    httpOnly:true
+  });
   };
 
   const clearState = () => {
@@ -37,16 +39,25 @@ export default function Login() {
     }
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    login(dispatch, form, processAction);
+    await login(dispatch, form, processAction);
+     redirectPage(e)
   };
 
-  useEffect(() => {
-    if (authCookie.access_token != "null" && authCookie.access_token != null) {
-      router.push("/");
-    }
-  }, [authCookie]);
+  const redirectPage = (e)=>{
+    
+    e.preventDefault()
+    window.location.href="/"
+    
+    
+  }
+
+  // useEffect(() => {
+  //   if (authCookie.access_token != "null" && authCookie.access_token != null) {
+  //     redirectPage()
+  //   }
+  // }, [authCookie]);
 
   useEffect(() => {
     clearState();
