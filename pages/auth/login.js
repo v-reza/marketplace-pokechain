@@ -2,13 +2,12 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { login } from "@/redux/action/authActions";
-import { useDispatch } from "react-redux";
 import { Spinner } from "flowbite-react";
 import { useRouter } from "next/router";
 import { setNotification } from "@/redux/action/notificationActions";
-import { useCookies } from "react-cookie";
 import useAuth from "@/hooks/useAuth";
+import { login } from "@/contexts/AuthAction";
+import { useCookies } from "react-cookie";
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -18,42 +17,37 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setIsMessage] = useState(null);
-  const dispatch = useDispatch();
   const router = useRouter();
-  const { accessToken } = useAuth();
+  const { dispatch } = useAuth();
+  const [cookieIsAuth, setCookieIsAuth] = useCookies(["isAuth"]);
 
-  const processAction = ({ error, loading, message }) => {
-    setError(error);
-    setIsLoading(loading);
-    setIsMessage(message);
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    await login(dispatch, form, ({ error, loading, message }) => {
+      setError(error);
+      setIsLoading(loading);
+      setIsMessage(message);
+      setCookieIsAuth("isAuth", true, {
+        path: "/auth/login",
+      });
+      setCookieIsAuth("isAuth", true, {
+        path: "/auth/register",
+      });
+      router.push("/");
+    });
   };
-
-  const clearState = () => {
+  useEffect(() => {
     if (!error) {
       setForm({
         userOrEmail: "",
         password: "",
       });
     }
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    await login(dispatch, form, processAction);
-  };
-
-  useEffect(() => {
-    if (accessToken != "null" && accessToken != null) {
-      router.push("/");
-    }
-  }, [accessToken]);
-
-  useEffect(() => {
-    clearState();
     if (message) {
       setNotification(dispatch, { message, error });
     }
-  }, [message]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [message, error]);
 
   return (
     <>
@@ -220,10 +214,9 @@ export default function Login() {
 }
 
 export async function getServerSideProps(context) {
-  if (
-    context.req.cookies.access_token != "null" &&
-    context.req.cookies.access_token != null
-  ) {
+  const { req, res } = context;
+  const isAuth = req.cookies?.isAuth;
+  if (Boolean(isAuth)) {
     return {
       redirect: {
         permanent: false,
@@ -232,8 +225,6 @@ export async function getServerSideProps(context) {
     };
   }
   return {
-    props: {
-      data: null,
-    },
+    props: {},
   };
 }

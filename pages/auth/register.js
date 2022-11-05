@@ -299,10 +299,9 @@ export default function Register() {
 }
 
 export async function getServerSideProps(context) {
-  if (
-    context.req.cookies.access_token != "null" &&
-    context.req.cookies.access_token != null
-  ) {
+  const { req, res } = context;
+  const isAuth = req.cookies?.isAuth;
+  if (Boolean(isAuth)) {
     return {
       redirect: {
         permanent: false,
@@ -311,8 +310,6 @@ export async function getServerSideProps(context) {
     };
   }
   return {
-    props: {
-      data: null,
-    },
+    props: {},
   };
 }

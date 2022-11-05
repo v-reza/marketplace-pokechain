@@ -161,15 +161,6 @@ const Sidebar = ({ children }) => {
                           >
                             Marketplace
                           </span>
-                          <span
-                            className={`ml-2 ${
-                              router.pathname === "/"
-                                ? "text-amber-500"
-                                : "text-white"
-                            } font-bold`}
-                          >
-                            Marketplasasace
-                          </span>
                         </div>
                       </Link>
                       <span className="text-sm font-extrabold text-slate-400 px-8">

@@ -1,6 +1,5 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { createWrapper } from "next-redux-wrapper";
-import authReducer from "@/redux/reducer/authReducer";
 import notificationReducer from "@/redux/reducer/notificationReducer";
 import userReducer from "@/redux/reducer/userReducer";
 import {
@@ -15,14 +14,7 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-const authPersistConfig = {
-  key: "auth",
-  version: 1,
-  storage,
-};
-
 const rootReducer = combineReducers({
-  auth: persistReducer(authPersistConfig, authReducer),
   user: userReducer,
   notification: notificationReducer,
 });

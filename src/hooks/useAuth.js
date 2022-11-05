@@ -1,10 +1,6 @@
-import { useSelector } from "react-redux";
+import { AuthContext } from "@/contexts/AuthContext";
+import { useContext } from "react";
 
-const useAuth = () => {
-  const { accessToken } = useSelector((state) => state.auth);
-  return {
-    accessToken,
-  };
-};
+const useAuth = () => useContext(AuthContext);
 
 export default useAuth;

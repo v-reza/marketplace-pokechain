@@ -7,7 +7,7 @@
       "@/utils/*": ["src/utils/*"],
       "@/services/*": ["src/services/*"],
       "@/redux/*": ["src/redux/*"],
-      "@/context/*": ["src/context/*"],
+      "@/contexts/*": ["src/contexts/*"],
       "@/utils": ["src/utils/*"],
       "@/middleware": ["src/middleware/*"],
       "@/dist/*": ["src/dist/assets/*"],
