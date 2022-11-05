@@ -15,18 +15,18 @@ const userSlice = createSlice({
   extraReducers: {
     [HYDRATE]: (state, action) => {
       if (typeof window !== "undefined") {
-        const access_token = localStorage.getItem("access_token");
-
+        const access_token_string = JSON.parse(localStorage.getItem("persist:auth")).accessToken;
+        const access_token = JSON.parse(access_token_string)
         if (access_token) {
-          const { userId, email, username, exp, profile, refresh_token } =
+          const { userIdUpdated, emailUpdated, usernameUpdated, exp, profileUpdated, refreshTokenUpdated } =
             jwtDecode(access_token);
           const data = {
-            userId,
-            email,
-            username,
+            userId:userIdUpdated,
+            email:emailUpdated,
+            username:usernameUpdated,
             exp,
-            profile,
-            refresh_token,
+            profile:profileUpdated,
+            refresh_token:refreshTokenUpdated,
           };
           state.currentUser = data;
         }
@@ -36,7 +36,5 @@ const userSlice = createSlice({
 });
 
 export const { setUser } = userSlice.actions;
-
-export const selectUserState = (state) => state.user;
 
 export default userSlice.reducer;

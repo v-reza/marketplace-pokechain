@@ -10,12 +10,12 @@ import { navigation } from "@/utils/navigation";
 import LoginModal from "./AuthPages/Login";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
 import useUser from "@/hooks/useUser";
-import { selectUserState } from "@/redux/reducer/userReducer";
-import { useCookies } from "react-cookie";
-import { logout } from "@/redux/action/authActions";
+import { fetchUser, logout } from "@/redux/action/authActions";
 import { setNotification } from "@/redux/action/notificationActions";
+import useAuth from "@/hooks/useAuth";
+import { useDispatch } from "react-redux";
+import axiosInstance from "@/utils/axiosInstance";
 
 const SidebarMainContent = ({ children }) => {
   return <>{children}</>;
@@ -28,25 +28,27 @@ const Sidebar = ({ children }) => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setIsMessage] = useState(null);
-  const [authCookie, setAuthCookie, removeAuthCookie] = useCookies([
-    "access_token",
-  ]);
-  const currentUser = useSelector(selectUserState);
-  console.log(currentUser);
+  const { accessToken } = useAuth();
+  const { currentUser } = useUser();
+  console.log(currentUser)
   const router = useRouter();
+  const dispatch = useDispatch()
 
-  const processAction = ({ error, loading, message, access_token }) => {
+  const processAction = ({ error, loading, message }) => {
     setError(error);
     setIsLoading(loading);
     setIsMessage(message);
-    setAuthCookie("access_token", access_token, { path: "/" });
   };
 
   const handleLogout = (e) => {
     e.preventDefault();
-    logout(processAction)
-    // removeAuthCookie("access_token")
+    logout(dispatch,processAction,{refresh_token:currentUser?.refresh_token});
   };
+
+  const fetchUserAccessToken = (e)=>{
+    e.preventDefault();
+    fetchUser()
+  }
 
   useEffect(() => {
     if (message) {
@@ -159,6 +161,15 @@ const Sidebar = ({ children }) => {
                           >
                             Marketplace
                           </span>
+                          <span
+                            className={`ml-2 ${
+                              router.pathname === "/"
+                                ? "text-amber-500"
+                                : "text-white"
+                            } font-bold`}
+                          >
+                            Marketplasasace
+                          </span>
                         </div>
                       </Link>
                       <span className="text-sm font-extrabold text-slate-400 px-8">
@@ -194,23 +205,63 @@ const Sidebar = ({ children }) => {
                   <div className="absolute bottom-0 left-0 right-0 pb-3 flex-shrink-0">
                     <div className="px-4 flex-shrink-0 w-full h-max">
                       <Link href="/auth/login">
-                        <div
-                          className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent text-base font-medium text-white shadow focus:outline-none"
-                          id="btn_login"
-                        >
-                          {/* <LoginIcon className="w-5 h-5" /> */}
-                          <svg viewBox="0 0 24 24" width="16" height="16">
-                            <path
-                              d="M6.75 3.25A4.75 4.75 0 0 0 2 8v8a4.75 4.75 0 0 0 4.75 4.75H14A4.75 4.75 0 0 0 18.75 16a.75.75 0 0 0-1.5 0A3.25 3.25 0 0 1 14 19.25H9.464A4.733 4.733 0 0 0 10.75 16V8c0-1.257-.488-2.4-1.286-3.25H14A3.25 3.25 0 0 1 17.25 8a.75.75 0 0 0 1.5 0A4.75 4.75 0 0 0 14 3.25H6.75Z"
-                              fill="currentColor"
-                            ></path>
-                            <path
-                              d="M15.53 9.47a.75.75 0 0 1 0 1.06l-.72.72h6.44a.75.75 0 0 1 0 1.5h-6.44l.72.72a.75.75 0 1 1-1.06 1.06l-1.293-1.293a1.75 1.75 0 0 1 0-2.474L14.47 9.47a.75.75 0 0 1 1.06 0Z"
-                              fill="currentColor"
-                            ></path>
-                          </svg>
-                          <span className="font-medium">Log issn</span>
-                        </div>
+                        {accessToken != null && accessToken != "null" ? (
+                          <div className="flex-shrink-0  flex  p-5 ml-4">
+                            <a
+                              href="#"
+                              className="flex-shrink-0 w-full group block"
+                            >
+                              <div className="flex">
+                                <div>
+                                  <img
+                                    className="inline-block h-9 w-9 rounded-full"
+                                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                    alt=""
+                                  />
+                                </div>
+                                {largeSidebarOpen && (
+                                  <div className="ml-3">
+                                    <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                                      {currentUser?.email}
+                                    </p>
+                                    <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
+                                      View profile
+                                    </p>
+                                  </div>
+                                )}
+                                 <div className="ml-3">
+                                    <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                                      {currentUser?.email}
+                                    </p>
+                                    <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
+                                      View profile
+                                    </p>
+                                  </div>
+                              </div>
+                            </a>
+                          </div>
+                        ) : (
+                          <div className="px-4 flex-shrink-0 w-full">
+                            <div
+                              className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent text-base font-medium text-white shadow focus:outline-none"
+                              id="btn_login"
+                            >
+                              <svg viewBox="0 0 24 24" width="16" height="16">
+                                <path
+                                  d="M6.75 3.25A4.75 4.75 0 0 0 2 8v8a4.75 4.75 0 0 0 4.75 4.75H14A4.75 4.75 0 0 0 18.75 16a.75.75 0 0 0-1.5 0A3.25 3.25 0 0 1 14 19.25H9.464A4.733 4.733 0 0 0 10.75 16V8c0-1.257-.488-2.4-1.286-3.25H14A3.25 3.25 0 0 1 17.25 8a.75.75 0 0 0 1.5 0A4.75 4.75 0 0 0 14 3.25H6.75Z"
+                                  fill="currentColor"
+                                ></path>
+                                <path
+                                  d="M15.53 9.47a.75.75 0 0 1 0 1.06l-.72.72h6.44a.75.75 0 0 1 0 1.5h-6.44l.72.72a.75.75 0 1 1-1.06 1.06l-1.293-1.293a1.75 1.75 0 0 1 0-2.474L14.47 9.47a.75.75 0 0 1 1.06 0Z"
+                                  fill="currentColor"
+                                ></path>
+                              </svg>
+                              {largeSidebarOpen && (
+                                <span className="font-medium">Log in</span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </Link>
                     </div>
                   </div>
@@ -344,8 +395,7 @@ const Sidebar = ({ children }) => {
             className="flex-shrink-0 flex pb-5 bg-gray-900"
             onClick={() => setOpenAuthModal(true)}
           >
-            {authCookie.access_token != null &&
-            authCookie.access_token != "null" ? (
+            {accessToken != null && accessToken != "null" ? (
               <div className="flex-shrink-0  flex  p-5 ml-4">
                 <a href="#" className="flex-shrink-0 w-full group block">
                   <div className="flex">
@@ -359,7 +409,7 @@ const Sidebar = ({ children }) => {
                     {largeSidebarOpen && (
                       <div className="ml-3">
                         <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                          {currentUser.currentUser?.email}
+                          {currentUser?.email}
                         </p>
                         <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
                           View profile
@@ -412,79 +462,91 @@ const Sidebar = ({ children }) => {
             <div className="flex-1 px-4 flex justify-end sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8 bg-gray-900 border-b border-slate-600">
               <div className="ml-4 flex items-center md:ml-6">
                 {/* Profile dropdown */}
-                {authCookie.access_token != null &&
-                  authCookie.access_token != "null" && (
-                    <Menu as="div" className="ml-3 relative">
-                      <div>
-                        <Menu.Button className="max-w-xs bg-white rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 lg:p-2 lg:rounded-md lg:hover:bg-gray-50">
-                          <img
-                            className="h-8 w-8 rounded-full"
-                            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                            alt=""
-                          />
-                          <span className="hidden ml-3 text-gray-700 text-sm font-medium lg:block">
-                            <span className="sr-only">Open user menu for </span>
-                            Emilia Birch
-                          </span>
-                          <ChevronDownIcon
-                            className="hidden flex-shrink-0 ml-1 h-5 w-5 text-gray-400 lg:block"
-                            aria-hidden="true"
-                          />
-                        </Menu.Button>
-                      </div>
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          <Menu.Item>
-                            {({ active }) => (
-                              <a
-                                href="#"
-                                className={classNames(
-                                  active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700"
-                                )}
-                              >
-                                Your Profile
-                              </a>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <a
-                                href="#"
-                                className={classNames(
-                                  active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700"
-                                )}
-                              >
-                                Settings
-                              </a>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <a
-                                onClick={handleLogout}
-                                className={classNames(
-                                  active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700"
-                                )}
-                              >
-                                Logout
-                              </a>
-                            )}
-                          </Menu.Item>
-                        </Menu.Items>
-                      </Transition>
-                    </Menu>
-                  )}
+                {accessToken != null && accessToken != "null" && (
+                  <Menu as="div" className="ml-3 relative">
+                    <div>
+                      <Menu.Button className="max-w-xs bg-white rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 lg:p-2 lg:rounded-md lg:hover:bg-gray-50">
+                        <img
+                          className="h-8 w-8 rounded-full"
+                          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                          alt=""
+                        />
+                        <span className="hidden ml-3 text-gray-700 text-sm font-medium lg:block">
+                          <span className="sr-only">Open user menu for </span>
+                          Emilia Birch
+                        </span>
+                        <ChevronDownIcon
+                          className="hidden flex-shrink-0 ml-1 h-5 w-5 text-gray-400 lg:block"
+                          aria-hidden="true"
+                        />
+                      </Menu.Button>
+                    </div>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              Your Profile
+                            </a>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              onClick={fetchUserAccessToken}
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              Test feth user yang membutuhkan accestoken
+                            </a>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              Settings
+                            </a>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              onClick={handleLogout}
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              Logout
+                            </a>
+                          )}
+                        </Menu.Item>
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
+                )}
               </div>
             </div>
           </div>

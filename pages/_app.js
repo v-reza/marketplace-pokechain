@@ -4,10 +4,7 @@ import Notification from "@/components/Notification";
 import { Provider, useDispatch } from "react-redux";
 import { store, persistor, wrapper } from "@/redux/store";
 import { PersistGate } from "redux-persist/integration/react";
-import jwt_decode from "jwt-decode";
 import "../styles/globals.css";
-import { setDecodeUser } from "@/redux/action/userActions";
-import { setUser } from "@/redux/reducer/userReducer";
 
 function MyApp({ Component, pageProps, hiddenSidebar, user }) {
   return (

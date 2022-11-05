@@ -8,6 +8,7 @@ import { Spinner } from "flowbite-react";
 import { useRouter } from "next/router";
 import { setNotification } from "@/redux/action/notificationActions";
 import { useCookies } from "react-cookie";
+import useAuth from "@/hooks/useAuth";
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -17,15 +18,14 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setIsMessage] = useState(null);
-  const [authCookie, setAuthCookie] = useCookies(["access_token"]);
   const dispatch = useDispatch();
   const router = useRouter();
+  const { accessToken } = useAuth();
 
-  const processAction = ({ error, loading, message, access_token }) => {
+  const processAction = ({ error, loading, message }) => {
     setError(error);
     setIsLoading(loading);
     setIsMessage(message);
-    setAuthCookie("access_token", access_token, { path: "/" });
   };
 
   const clearState = () => {
@@ -40,15 +40,13 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     await login(dispatch, form, processAction);
-    
   };
 
   useEffect(() => {
-    if (authCookie.access_token != "null" && authCookie.access_token != null) {
+    if (accessToken != "null" && accessToken != null) {
       router.push("/");
-      localStorage.setItem("access_token", authCookie.access_token);
     }
-  }, [authCookie]);
+  }, [accessToken]);
 
   useEffect(() => {
     clearState();

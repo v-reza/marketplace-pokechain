@@ -1,12 +1,19 @@
-import { publicRequest, userRequest } from "@/utils/axiosInstance";
+// import { publicRequest, userRequest } from "@/utils/axiosInstance";
+import {axiosInstance,publicRequest}from "@/utils/axiosInstance";
+import {
+  loadIsFailed,
+  loadIsStart,
+  loadIsSuccess,
+} from "../reducer/authReducer";
+
 
 export const login = async (dispatch, data, processAction) => {
   processAction({
     error: null,
     loading: true,
     message: null,
-    access_token: null,
   });
+  dispatch(loadIsStart());
   try {
     const response = await publicRequest.post("/auth/login", data);
     const { msg, accessToken } = response.data;
@@ -14,16 +21,18 @@ export const login = async (dispatch, data, processAction) => {
       error: false,
       loading: false,
       message: msg,
-      access_token: accessToken,
     });
+    dispatch(loadIsSuccess({ accessToken }));
+    
   } catch (e) {
     const { msg } = e.response.data;
     processAction({
       error: true,
       loading: false,
       message: msg,
-      access_token: null,
     });
+    dispatch(loadIsFailed());
+    console.log(e)
   }
 };
 
@@ -51,14 +60,18 @@ export const register = async (data, processAction) => {
   }
 };
 
-export const logout = async (processAction) => {
-  const response = await publicRequest.delete("/auth/logout");
+export const logout = async (dispatch, processAction, data) => {
+  const response = await publicRequest.delete("/auth/logout", { data });
+  const { msg } = response.data;
+  processAction({
+    error: false,
+    loading: false,
+    message: msg,
+  });
+  dispatch(loadIsFailed());
+};
+
+export const fetchUser = async (data) => {
+  const response = await axiosInstance.get("/auth/users");
   console.log(response);
-  // const { msg } = response.data;
-  // processAction({
-  //   error: false,
-  //   loading: false,
-  //   message: msg,
-  //   access_token: null,
-  // });
 };
