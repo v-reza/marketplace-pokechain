@@ -1,8 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { HYDRATE } from "next-redux-wrapper";
-import jwtDecode from "jwt-decode";
-import { publicRequest } from "@/utils/axiosInstance";
-
 const userSlice = createSlice({
   name: "user",
   initialState: {

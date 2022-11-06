@@ -26,7 +26,7 @@ const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps, hiddenSidebar, ...props }) {
   return (
-    <Provider store={store}>
+    <Provider store={store} >
       <Head>
         <meta name="google" content="notranslate" />
       </Head>

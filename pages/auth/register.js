@@ -3,7 +3,7 @@ import { EyeIcon, EyeOffIcon } from "@heroicons/react/solid";
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { register } from "@/redux/action/authActions";
+import { register } from "@/contexts/AuthActions";
 import { Spinner } from "flowbite-react";
 import { useDispatch } from "react-redux";
 import { setNotification } from "@/redux/action/notificationActions";
@@ -23,13 +23,16 @@ export default function Register() {
   const [message, setIsMessage] = useState(null);
   const dispatch = useDispatch();
 
-  const processAction = ({ error, loading, message }) => {
-    setError(error);
-    setIsLoading(loading);
-    setIsMessage(message);
+  const handleRegister = (e) => {
+    e.preventDefault();
+    register(dispatch,form, ({ error, loading, message }) => {
+      setError(error);
+      setIsLoading(loading);
+      setIsMessage(message);
+    });
   };
 
-  const clearState = () => {
+  useEffect(() => {
     if (error == false) {
       setForm({
         username: "",
@@ -38,19 +41,7 @@ export default function Register() {
         confirmPassword: "",
       });
     }
-  };
-
-  const handleRegister = (e) => {
-    e.preventDefault();
-    register(form, processAction);
-  };
-
-  useEffect(() => {
-    clearState();
-    if (message) {
-      setNotification(dispatch, { message, error });
-    }
-  }, [message]);
+  }, [error]);
 
   return (
     <>
@@ -298,18 +289,18 @@ export default function Register() {
   );
 }
 
-export async function getServerSideProps(context) {
-  const { req, res } = context;
-  const isAuth = req.cookies?.isAuth;
-  if (Boolean(isAuth)) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/",
-      },
-    };
-  }
-  return {
-    props: {},
-  };
-}
+// export async function getServerSideProps(context) {
+//   const { req, res } = context;
+//   const isAuth = req.cookies?.isAuth;
+//   if (Boolean(isAuth)) {
+//     return {
+//       redirect: {
+//         permanent: false,
+//         destination: "/",
+//       },
+//     };
+//   }
+//   return {
+//     props: {},
+//   };
+// }

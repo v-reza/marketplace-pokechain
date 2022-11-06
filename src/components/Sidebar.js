@@ -11,11 +11,11 @@ import LoginModal from "./AuthPages/Login";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useUser from "@/hooks/useUser";
-import { fetchUser, logout } from "@/redux/action/authActions";
+import { fetchUser, logout } from "@/contexts/AuthActions";
 import { setNotification } from "@/redux/action/notificationActions";
 import useAuth from "@/hooks/useAuth";
 import { useDispatch } from "react-redux";
-import axiosInstance from "@/utils/axiosInstance";
+import { useAxios } from "@/utils/axiosInstance";
 
 const SidebarMainContent = ({ children }) => {
   return <>{children}</>;
@@ -28,33 +28,33 @@ const Sidebar = ({ children }) => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setIsMessage] = useState(null);
-  const { accessToken } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const [isAuth,setIsAuth] = useState(false)
   const { currentUser } = useUser();
-  console.log(currentUser)
   const router = useRouter();
-  const dispatch = useDispatch()
-
-  const processAction = ({ error, loading, message }) => {
-    setError(error);
-    setIsLoading(loading);
-    setIsMessage(message);
-  };
+  const { dispatch } = useAuth();
+  const dispatchRedux = useDispatch()
+  const axiosInstance = useAxios()
+  console.log(currentUser)
 
   const handleLogout = (e) => {
     e.preventDefault();
-    logout(dispatch,processAction,{refresh_token:currentUser?.refresh_token});
+    logout({dispatch,dispatchRedux},{refresh_token:currentUser?.refresh_token},({ error, loading, message }) => {
+      setError(error);
+      setIsLoading(loading);
+      setIsMessage(message);
+    });
   };
 
   const fetchUserAccessToken = (e)=>{
     e.preventDefault();
-    fetchUser()
+    fetchUser(axiosInstance)
   }
 
   useEffect(() => {
-    if (message) {
-      setNotification(dispatch, { message, error });
-    }
-  }, [message]);
+    setIsAuth(isAuthenticated)
+  }, [isAuthenticated])
+  
 
   return (
     <>
@@ -196,7 +196,7 @@ const Sidebar = ({ children }) => {
                   <div className="absolute bottom-0 left-0 right-0 pb-3 flex-shrink-0">
                     <div className="px-4 flex-shrink-0 w-full h-max">
                       <Link href="/auth/login">
-                        {accessToken != null && accessToken != "null" ? (
+                        {isAuth != null && isAuth != "null" ? (
                           <div className="flex-shrink-0  flex  p-5 ml-4">
                             <a
                               href="#"
@@ -386,7 +386,7 @@ const Sidebar = ({ children }) => {
             className="flex-shrink-0 flex pb-5 bg-gray-900"
             onClick={() => setOpenAuthModal(true)}
           >
-            {accessToken != null && accessToken != "null" ? (
+            {isAuth != null && isAuth != "null" ? (
               <div className="flex-shrink-0  flex  p-5 ml-4">
                 <a href="#" className="flex-shrink-0 w-full group block">
                   <div className="flex">
@@ -453,7 +453,7 @@ const Sidebar = ({ children }) => {
             <div className="flex-1 px-4 flex justify-end sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8 bg-gray-900 border-b border-slate-600">
               <div className="ml-4 flex items-center md:ml-6">
                 {/* Profile dropdown */}
-                {accessToken != null && accessToken != "null" && (
+                {isAuth != null && isAuth != "null" && (
                   <Menu as="div" className="ml-3 relative">
                     <div>
                       <Menu.Button className="max-w-xs bg-white rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 lg:p-2 lg:rounded-md lg:hover:bg-gray-50">

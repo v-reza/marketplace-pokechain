@@ -6,6 +6,7 @@ const baseURL = "http://localhost:5000/api/v1/";
 
 export const useAxios = () => {
   const { access_token } = useAuth();
+
   const axiosInstance = axios.create({
     baseURL,
     headers: {
@@ -21,14 +22,13 @@ export const useAxios = () => {
         },
       });
       const { accessToken } = response.data;
-      localStorage.setItem("access_token", accessToken);
+      localStorage.setItem("access_token", JSON.stringify(accessToken));
       req.headers.Authorization = `Bearer ${accessToken}`;
-
-      return req;
     }
+    return req;
   });
 
-  return axiosInstance
+  return axiosInstance;
 };
 
 export const publicRequest = axios.create({

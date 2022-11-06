@@ -6,8 +6,10 @@ import { Spinner } from "flowbite-react";
 import { useRouter } from "next/router";
 import { setNotification } from "@/redux/action/notificationActions";
 import useAuth from "@/hooks/useAuth";
-import { login } from "@/contexts/AuthAction";
+import { login } from "@/contexts/AuthActions";
 import { useCookies } from "react-cookie";
+import { useDispatch } from "react-redux";
+import useUser from "@/hooks/useUser";
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -19,35 +21,41 @@ export default function Login() {
   const [message, setIsMessage] = useState(null);
   const router = useRouter();
   const { dispatch } = useAuth();
+  const dispatchRedux = useDispatch();
   const [cookieIsAuth, setCookieIsAuth] = useCookies(["isAuth"]);
+  const { access_token } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    await login(dispatch, form, ({ error, loading, message }) => {
-      setError(error);
-      setIsLoading(loading);
-      setIsMessage(message);
-      setCookieIsAuth("isAuth", true, {
-        path: "/auth/login",
-      });
-      setCookieIsAuth("isAuth", true, {
-        path: "/auth/register",
-      });
-      router.push("/");
-    });
+    await login(
+      { dispatch, dispatchRedux },
+      form,
+      ({ error, loading, message }) => {
+        setError(error);
+        setIsLoading(loading);
+        setIsMessage(message);
+
+        // setCookieIsAuth("isAuth", true, {
+        //   path: "/auth/login",
+        // });
+        // setCookieIsAuth("isAuth", true, {
+        //   path: "/auth/register",
+        // });
+        if (error == false) {
+          router.push("/");
+        }
+      }
+    );
   };
+
   useEffect(() => {
-    if (!error) {
+    if (error == false) {
       setForm({
         userOrEmail: "",
         password: "",
       });
     }
-    if (message) {
-      setNotification(dispatch, { message, error });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [message, error]);
+  }, [error]);
 
   return (
     <>
