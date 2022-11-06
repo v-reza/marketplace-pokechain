@@ -22,7 +22,6 @@ export default function Login() {
   const router = useRouter();
   const { dispatch } = useAuth();
   const dispatchRedux = useDispatch();
-  const [cookieIsAuth, setCookieIsAuth] = useCookies(["isAuth"]);
   const { access_token } = useAuth();
 
   const handleLogin = async (e) => {
@@ -34,13 +33,6 @@ export default function Login() {
         setError(error);
         setIsLoading(loading);
         setIsMessage(message);
-
-        // setCookieIsAuth("isAuth", true, {
-        //   path: "/auth/login",
-        // });
-        // setCookieIsAuth("isAuth", true, {
-        //   path: "/auth/register",
-        // });
         if (error == false) {
           router.push("/");
         }

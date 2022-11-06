@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import jwtDecode from "jwt-decode";
 import { setDecodeUser } from "@/redux/action/userActions";
 import { publicRequest } from "@/utils/axiosInstance";
+import { useCookies } from "react-cookie";
 
 const initalState = {
   access_token:
@@ -27,16 +28,18 @@ export const AuthContext = createContext(initalState);
 
 export const AuthContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AuthReducer, initalState);
-  const { currentUser } = useUser();
   const dispatchRedux = useDispatch();
+  const [cookieIsAuth, setCookieIsAuth, removeCookieIsAuth] = useCookies([
+    "isAuth",
+  ]);
   const router = useRouter();
-  const [acc,secAcc] = useState(null)
- 
+
   useEffect(() => {
     const saveState = async () => {
       if (state?.access_token) {
-        const expired = jwtDecode(state.access_token).exp;
-        let checkExpired = expired * 1000 < new Date().getTime() ? true : false;
+        const expired = jwtDecode(state?.access_token).exp;
+        const checkExpired =
+          expired * 1000 < new Date().getTime() ? true : false;
         if (checkExpired) {
           const response = await publicRequest.get("/auth/token", {
             params: {
@@ -45,54 +48,35 @@ export const AuthContextProvider = ({ children }) => {
           });
 
           const { accessToken } = response.data;
-      
           localStorage.setItem("access_token", accessToken);
-          state.access_token = accessToken;
-          secAcc(accessToken)
-          const {
-            userIdUpdated: userId,
-            emailUpdated: email,
-            usernameUpdated: username,
-            exp,
-            profileUpdated: profile,
-            refreshTokenUpdated: refresh_token,
-          } =  jwtDecode(acc);
-          console.log(userId)
-          const data = {
-            userId,
-            email,
-            username,
-            exp,
-            profile,
-            refresh_token,
-          };
-          setDecodeUser(dispatchRedux, data);
-        }else{
-          const {
-            userIdUpdated: userId,
-            emailUpdated: email,
-            usernameUpdated: username,
-            exp,
-            profileUpdated: profile,
-            refreshTokenUpdated: refresh_token,
-          } = jwtDecode(state.access_token);
-  
-          const data = {
-            userId,
-            email,
-            username,
-            exp,
-            profile,
-            refresh_token,
-          };
-          setDecodeUser(dispatchRedux, data);
+          const decodedUser = jwtDecode(accessToken);
+          setDecodeUser(dispatchRedux, decodedUser);
+        } else {
+          const decodedUser = jwtDecode(state.access_token);
+          setDecodeUser(dispatchRedux, decodedUser);
         }
-
-        
+        if (
+          router.pathname !== "/auth/login" ||
+          router.pathname !== "/auth/register"
+        ) {
+          setCookieIsAuth("isAuth", true, {
+            path: "/auth/login",
+          });
+          setCookieIsAuth("isAuth", true, {
+            path: "/auth/register",
+          });
+        }
+      } else {
+        removeCookieIsAuth("isAuth", {
+          path: "/auth/login",
+        });
+        removeCookieIsAuth("isAuth", {
+          path: "/auth/register",
+        });
       }
     };
     saveState();
-  }, [state?.access_token,state?.refresh_token]);
+  }, [state, state.access_token, state.refresh_token, router]);
 
   return (
     <AuthContext.Provider value={{ ...state, dispatch }}>

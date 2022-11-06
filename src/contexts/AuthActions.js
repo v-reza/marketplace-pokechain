@@ -15,7 +15,7 @@ export const login = async ({ dispatch, dispatchRedux }, data, cb) => {
   try {
     const response = await publicRequest.post("/auth/login", data);
     const { msg, accessToken } = response.data;
-    const {refreshTokenUpdated:refreshToken} = jwtDecode(accessToken)
+    const { refresh_token } = jwtDecode(accessToken);
     cb({
       error: false,
       loading: false,
@@ -32,7 +32,7 @@ export const login = async ({ dispatch, dispatchRedux }, data, cb) => {
     }
 
     localStorage.setItem("access_token", accessToken);
-    localStorage.setItem("refresh_token", refreshToken);
+    localStorage.setItem("refresh_token", refresh_token);
   } catch (e) {
     const { msg } = e.response.data;
     cb({
@@ -104,7 +104,6 @@ export const logout = async ({ dispatch, dispatchRedux }, data, cb) => {
       setNotification(dispatch, { message: msg, error: true });
     }
   }
-  
 };
 
 export const fetchUser = async (axiosInstance) => {
