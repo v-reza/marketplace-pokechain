@@ -148,7 +148,7 @@ const RecentSales = () => {
                           style={{
                             backgroundImage: `linear-gradient(180deg, rgba(175,219,27,0),${
                               getPokemonElementType(
-                                item.detail_market_pokemon.element.split(",")[0]
+                                item.element.split(",")[0]
                               ).rgba
                             })`,
                           }}
@@ -159,7 +159,7 @@ const RecentSales = () => {
                                 <div
                                   className={`flex items-center  bg-slate-800 rounded-md px-2 w-max py-1 space-x-1`}
                                 >
-                                  {item.detail_market_pokemon.element
+                                  {item.element
                                     .split(",")
                                     .map((element, index) => {
                                       const elementImage =
@@ -191,18 +191,18 @@ const RecentSales = () => {
 
                                   <div
                                     className={`flex items-center -mt-1 text-md !ml-2 ${
-                                      item.detail_market_pokemon.element.split(
+                                      item.element.split(
                                         ","
                                       ).length > 0 &&
                                       "text-transparent bg-clip-text"
                                     }`}
                                     style={
-                                      item.detail_market_pokemon.element.split(
+                                      item.element.split(
                                         ","
                                       ).length === 1
                                         ? {
                                             color: getPokemonElementType(
-                                              item.detail_market_pokemon.element.split(
+                                              item.element.split(
                                                 ","
                                               )[0]
                                             ).hex,
@@ -210,13 +210,13 @@ const RecentSales = () => {
                                         : {
                                             backgroundImage: `linear-gradient(to right, ${
                                               getPokemonElementType(
-                                                item.detail_market_pokemon.element.split(
+                                                item.element.split(
                                                   ","
                                                 )[0]
                                               ).hex
                                             }, ${
                                               getPokemonElementType(
-                                                item.detail_market_pokemon.element.split(
+                                                item.element.split(
                                                   ","
                                                 )[1]
                                               ).hex
@@ -224,7 +224,7 @@ const RecentSales = () => {
                                           }
                                     }
                                   >
-                                    #{item.int_id}
+                                    #{item.increment_id}
                                   </div>
                                 </div>
                               </div>
@@ -234,7 +234,7 @@ const RecentSales = () => {
                             <div className="flex flex-col items-center justify-center">
                               <Image
                                 alt="pokemon"
-                                src={item.detail_market_pokemon.front_default}
+                                src={item.front_default}
                                 width={100}
                                 height={100}
                                 blurDataURL
@@ -269,7 +269,7 @@ const RecentSales = () => {
                                     Pokemon
                                   </span>
                                   <span className="text-md font-medium text-white">
-                                    #{item.int_id}
+                                    #{item.increment_id}
                                   </span>
                                 </div>
                                 <span className=" mt-1 text-xs font-bold text-slate-400">
@@ -278,12 +278,15 @@ const RecentSales = () => {
                                     "Sold out by " + item.buyer?.user.username}
                                 </span>
                               </div>
-                              {/* <Tooltip
+                              <Tooltip
                                 placement="top"
                                 content={
                                   <div className="w-72 h-40 ">
                                     <div className="px-4">
                                       <div className="flex flex-col">
+                                        <span className="text-md font-bold text-slate-300 capitalize">
+                                          Seller : {item.marketplace.seller.user.username}
+                                        </span>
                                         <span className="text-md font-bold text-slate-300 capitalize">
                                           Pokemon Name : {item.name}
                                         </span>
@@ -293,10 +296,10 @@ const RecentSales = () => {
                                           </span>
                                           <span className="text-md font-bold text-slate-300 capitalize">
                                             Element :{" "}
-                                            {item.types
+                                            {item.element.split(",")
                                               .map((el, index) => (
                                                 <span key={index}>
-                                                  {el.type.name}{" "}
+                                                  {el}{" "}
                                                 </span>
                                               ))
                                               .reduce((prev, curr) => [
@@ -306,13 +309,13 @@ const RecentSales = () => {
                                               ])}
                                           </span>
                                           <span className="text-md font-bold text-slate-300 capitalize">
-                                            Health : {item.stats[0].base_stat}
+                                            Health : {item.health}
                                           </span>
                                           <span className="text-md font-bold text-slate-300 capitalize">
-                                            Attack : {item.stats[1].base_stat}
+                                            Attack : {item.attack}
                                           </span>
                                           <span className="text-md font-bold text-slate-300 capitalize">
-                                            Defense : {item.stats[2].base_stat}
+                                            Defense : {item.defense}
                                           </span>
                                         </div>
                                       </div>
@@ -333,7 +336,7 @@ const RecentSales = () => {
                                     fill="currentColor"
                                   ></path>
                                 </svg>
-                              </Tooltip> */}
+                              </Tooltip>
                             </div>
                           </div>
                         </div>
