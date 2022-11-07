@@ -2,7 +2,14 @@
 /* eslint-disable @next/next/no-img-element */
 import { Fragment, useEffect, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
-import { MenuAlt1Icon, ScaleIcon, XIcon } from "@heroicons/react/outline";
+import {
+  CogIcon,
+  LogoutIcon,
+  MenuAlt1Icon,
+  ScaleIcon,
+  UserIcon,
+  XIcon,
+} from "@heroicons/react/outline";
 import { ChevronDownIcon, SelectorIcon } from "@heroicons/react/solid";
 import { Tooltip } from "flowbite-react";
 import { classNames } from "@/utils/constant";
@@ -16,6 +23,7 @@ import { setNotification } from "@/redux/action/notificationActions";
 import useAuth from "@/hooks/useAuth";
 import { useDispatch } from "react-redux";
 import { useAxios } from "@/utils/axiosInstance";
+import Image from "next/image";
 
 const SidebarMainContent = ({ children }) => {
   return <>{children}</>;
@@ -35,7 +43,6 @@ const Sidebar = ({ children }) => {
   const { dispatch } = useAuth();
   const dispatchRedux = useDispatch();
   const axiosInstance = useAxios();
-  console.log(isAuth);
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -188,7 +195,7 @@ const Sidebar = ({ children }) => {
                                 item.customSize ? "w-8 h-8" : "h-5 w-8"
                               } ml-5 flex-shrink-0 mr-3`}
                               alt="icon"
-                              src={item.icon}
+                              src={item.icon.src}
                             />
                             {item.name}
                           </div>
@@ -370,7 +377,7 @@ const Sidebar = ({ children }) => {
                               largeSidebarOpen ? "ml-5" : "ml-4"
                             } flex-shrink-0`}
                             alt="icon"
-                            src={item.icon}
+                            src={item.icon.src}
                           />
                         </Tooltip>
                         {largeSidebarOpen && (
@@ -418,26 +425,26 @@ const Sidebar = ({ children }) => {
               className="pb-5 px-3 relative inline-block text-left ml-4"
             >
               <div>
-                <Menu.Button className="group w-full bg-gray-100 rounded-md px-3.5 py-2 text-sm text-left font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-purple-500">
+                <Menu.Button className="group w-full bg-transparent rounded-md px-2 py-2 text-sm text-left font-medium text-slate-300 border border-slate-700 hover:border-slate-800 focus:outline-none">
                   <span className="flex w-full justify-between items-center">
                     <span className="flex min-w-0 items-center justify-between space-x-3">
                       <img
                         className="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0"
-                        src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3&w=256&h=256&q=80"
+                        src="https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F43a391b7-152c-4e91-8a87-754bd6ad4b6f_840x1079.png"
                         alt=""
                       />
                       {largeSidebarOpen && (
                         <span className="flex-1 flex flex-col min-w-0">
-                          <span className="text-gray-900 text-sm font-medium truncate">
-                            Jessy Schwarz
+                          <span className="text-white text-sm font-medium truncate">
+                            {currentUser?.profile.fullName ||
+                              currentUser?.email}
                           </span>
                           <span className="text-gray-500 text-sm truncate">
-                            @jessyschwarz
+                            @{currentUser?.username}
                           </span>
                         </span>
                       )}
                     </span>
-                    
                   </span>
                 </Menu.Button>
               </div>
@@ -450,7 +457,11 @@ const Sidebar = ({ children }) => {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <Menu.Items className="top-2 transform -translate-y-full absolute right-0 w-56 -mt-4 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <Menu.Items
+                  className={`top-2 transform -translate-y-full absolute left-0 ${
+                    !largeSidebarOpen ? "w-max" : "w-56"
+                  } -mt-4 ml-3 border border-slate-700 origin-top-right bg-transparent divide-y divide-slate-600 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
+                >
                   <div className="py-1">
                     <Menu.Item>
                       {({ active }) => (
@@ -458,12 +469,20 @@ const Sidebar = ({ children }) => {
                           href="#"
                           className={classNames(
                             active
-                              ? "bg-gray-100 text-gray-900"
-                              : "text-gray-700",
+                              ? "bg-slate-600/50 text-slate-300"
+                              : "text-white",
+                            !largeSidebarOpen &&
+                              "flex items-center justify-center",
                             "block px-4 py-2 text-sm"
                           )}
                         >
-                          View profile
+                          {!largeSidebarOpen ? (
+                            <Tooltip content="View Profile" placement="top">
+                              <UserIcon className="w-6 h-6 text-white" />
+                            </Tooltip>
+                          ) : (
+                            <span>View Profile</span>
+                          )}
                         </a>
                       )}
                     </Menu.Item>
@@ -473,27 +492,20 @@ const Sidebar = ({ children }) => {
                           href="#"
                           className={classNames(
                             active
-                              ? "bg-gray-100 text-gray-900"
-                              : "text-gray-700",
+                              ? "bg-slate-600/50 text-slate-300"
+                              : "text-white",
+                            !largeSidebarOpen &&
+                              "flex items-center justify-center",
                             "block px-4 py-2 text-sm"
                           )}
                         >
-                          Settings
-                        </a>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={classNames(
-                            active
-                              ? "bg-gray-100 text-gray-900"
-                              : "text-gray-700",
-                            "block px-4 py-2 text-sm"
+                          {!largeSidebarOpen ? (
+                            <Tooltip content="Settings" placement="top">
+                              <CogIcon className="w-6 h-6" />
+                            </Tooltip>
+                          ) : (
+                            <span>Settings</span>
                           )}
-                        >
-                          Notifications
                         </a>
                       )}
                     </Menu.Item>
@@ -505,44 +517,20 @@ const Sidebar = ({ children }) => {
                           href="#"
                           className={classNames(
                             active
-                              ? "bg-gray-100 text-gray-900"
-                              : "text-gray-700",
+                              ? "bg-slate-600/50 text-slate-300"
+                              : "text-white",
+                            !largeSidebarOpen &&
+                              "flex items-center justify-center",
                             "block px-4 py-2 text-sm"
                           )}
                         >
-                          Get desktop app
-                        </a>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={classNames(
-                            active
-                              ? "bg-gray-100 text-gray-900"
-                              : "text-gray-700",
-                            "block px-4 py-2 text-sm"
+                          {!largeSidebarOpen ? (
+                            <Tooltip content="Logout" placement="top">
+                              <LogoutIcon className="w-6 h-6" />
+                            </Tooltip>
+                          ) : (
+                            <span>Log out</span>
                           )}
-                        >
-                          Support
-                        </a>
-                      )}
-                    </Menu.Item>
-                  </div>
-                  <div className="py-1">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={classNames(
-                            active
-                              ? "bg-gray-100 text-gray-900"
-                              : "text-gray-700",
-                            "block px-4 py-2 text-sm"
-                          )}
-                        >
-                          Logout
                         </a>
                       )}
                     </Menu.Item>
@@ -571,7 +559,7 @@ const Sidebar = ({ children }) => {
             <div className="flex-1 px-4 flex justify-end sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8 bg-gray-900 border-b border-slate-600">
               <div className="ml-4 flex items-center md:ml-6">
                 {/* Profile dropdown */}
-                {isAuth != null && isAuth != "null" && (
+                {isAuth && (
                   <Menu as="div" className="ml-3 relative">
                     <div>
                       <Menu.Button className="max-w-xs bg-white rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 lg:p-2 lg:rounded-md lg:hover:bg-gray-50">

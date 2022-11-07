@@ -14,11 +14,11 @@ export const useAxios = () => {
     },
   });
   axiosInstance.interceptors.request.use(async (req) => {
-    const { exp, refreshTokenUpdated: refreshToken } = jwtDecode(access_token);
+    const { exp, refresh_token } = jwtDecode(access_token);
     if (exp * 1000 < new Date().getTime()) {
       const response = await publicRequest.get("/auth/token", {
         params: {
-          refreshToken,
+          refreshToken: refresh_token,
         },
       });
       const { accessToken } = response.data;
