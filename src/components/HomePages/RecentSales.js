@@ -6,7 +6,24 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/solid";
 import { getPokemonElementType, getPriceToToken } from "@/utils/constant";
 import axios from "axios";
 import { Tooltip } from "flowbite-react";
+import { motion } from "framer-motion";
+import {
+  useQueryClient,
+  useQuery,
+  useQueries,
+  useIsFetching,
+} from "react-query";
+import { getRecentSales } from "./schema/query";
+import { getUserById } from "@/schema/query";
 const RecentSales = () => {
+  const queryClient = useQueryClient();
+  const {
+    isLoading,
+    isError,
+    data: recentSales,
+    error,
+  } = useQuery("recent-sales", getRecentSales);
+
   const itemTopSales = [
     {
       id: 1,
@@ -29,11 +46,7 @@ const RecentSales = () => {
       active: false,
     },
   ];
-  const [pokemon, setPokemon] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [randomOffset, setRandomOffset] = useState(
-    Math.floor(Math.random() * 800)
-  );
+
   const scrollRecentSales = useRef();
   const [btnScrollRecentSalesLeft, setBtnScrollRecentSalesLeft] =
     useState(false);
@@ -65,32 +78,6 @@ const RecentSales = () => {
       setBtnScrollRecentSalesRight(true);
     }
   };
-  useEffect(() => {
-    const getPokemon = async () => {
-      try {
-        const res = await axios.get(
-          `https://pokeapi.co/api/v2/pokemon/?offset=${randomOffset}&limit=9`
-        );
-        if (res.data.results.length > 0) {
-          await res.data.results.map(async (item) => {
-            await axios
-              .get(item.url)
-              .then((res) =>
-                setPokemon((prev) => [
-                  ...prev.filter((item) => item.name !== res.data.name),
-                  res.data,
-                ])
-              );
-          });
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getPokemon();
-  }, []);
   return (
     <div>
       <div className="relative lg:px-12 pb-16 sm:pb-24 lg:pb-20">
@@ -125,7 +112,7 @@ const RecentSales = () => {
               id="scroll_item_topSales"
               ref={scrollRecentSales}
             >
-              {btnScrollRecentSalesLeft && !loading && (
+              {btnScrollRecentSalesLeft && !isLoading && (
                 <div
                   className="hidden lg:block absolute top-0 bottom-0 z-20 left-0 mx-auto cursor-pointer"
                   onClick={() => scroll(-300, "activeRight")}
@@ -135,7 +122,7 @@ const RecentSales = () => {
                   </div>
                 </div>
               )}
-              {btnScrollRecentSalesRight && !loading && (
+              {btnScrollRecentSalesRight && !isLoading && (
                 <div
                   className="hidden lg:block absolute top-0 bottom-0 z-20 right-0 mx-auto cursor-pointer"
                   onClick={() => scroll(300, "activeLeft")}
@@ -145,22 +132,24 @@ const RecentSales = () => {
                   </div>
                 </div>
               )}
-              {!loading
-                ? pokemon.map((item, index) => (
+              {!isLoading
+                ? recentSales.results.map((item, index) => (
                     <div
                       className="flex flex-col items-start space-y-2"
                       key={index}
                     >
-                      <div
+                      <motion.div
                         key={index}
+                        whileHover={{ scale: 1.05 }}
                         className="shadow-lg hover:shadow-xl flex flex-col rounded-lg w-full bg-gray-700 border border-slate-600  hover:border-slate-500 cursor-pointer"
                       >
                         <div
                           className={`h-56 w-72 bg-opacity-25 rounded-t-lg shadow-lg `}
                           style={{
                             backgroundImage: `linear-gradient(180deg, rgba(175,219,27,0),${
-                              getPokemonElementType(item.types[0].type.name)
-                                .rgba
+                              getPokemonElementType(
+                                item.detail_market_pokemon.element.split(",")[0]
+                              ).rgba
                             })`,
                           }}
                         >
@@ -170,61 +159,72 @@ const RecentSales = () => {
                                 <div
                                   className={`flex items-center  bg-slate-800 rounded-md px-2 w-max py-1 space-x-1`}
                                 >
-                                  {item.types.map((element, index) => {
-                                    const elementImage = getPokemonElementType(
-                                      element.type.name
-                                    );
-                                    return (
-                                      <div
-                                        key={index}
-                                        className="text-sm font-extrabold text-white "
-                                      >
-                                        <Tooltip
-                                          placement="top"
-                                          content={
-                                            <span className="capitalize">
-                                              {element.type.name}
-                                            </span>
-                                          }
+                                  {item.detail_market_pokemon.element
+                                    .split(",")
+                                    .map((element, index) => {
+                                      const elementImage =
+                                        getPokemonElementType(element);
+                                      return (
+                                        <div
+                                          key={index}
+                                          className="text-sm font-extrabold text-white "
                                         >
-                                          <Image
-                                            alt={index}
-                                            src={elementImage.img}
-                                            width={20}
-                                            height={20}
-                                            style={{ marginTop: "1px" }}
-                                          />
-                                        </Tooltip>
-                                      </div>
-                                    );
-                                  })}
+                                          <Tooltip
+                                            placement="top"
+                                            content={
+                                              <span className="capitalize">
+                                                {element}
+                                              </span>
+                                            }
+                                          >
+                                            <Image
+                                              alt={index}
+                                              src={elementImage.img}
+                                              width={20}
+                                              height={20}
+                                              style={{ marginTop: "1px" }}
+                                            />
+                                          </Tooltip>
+                                        </div>
+                                      );
+                                    })}
 
                                   <div
                                     className={`flex items-center -mt-1 text-md !ml-2 ${
-                                      item.types.length > 0 &&
+                                      item.detail_market_pokemon.element.split(
+                                        ","
+                                      ).length > 0 &&
                                       "text-transparent bg-clip-text"
                                     }`}
                                     style={
-                                      item.types.length === 1
+                                      item.detail_market_pokemon.element.split(
+                                        ","
+                                      ).length === 1
                                         ? {
                                             color: getPokemonElementType(
-                                              item.types[0].type.name
+                                              item.detail_market_pokemon.element.split(
+                                                ","
+                                              )[0]
                                             ).hex,
                                           }
                                         : {
                                             backgroundImage: `linear-gradient(to right, ${
                                               getPokemonElementType(
-                                                item.types[0].type.name
+                                                item.detail_market_pokemon.element.split(
+                                                  ","
+                                                )[0]
                                               ).hex
                                             }, ${
                                               getPokemonElementType(
-                                                item.types[1].type.name
+                                                item.detail_market_pokemon.element.split(
+                                                  ","
+                                                )[1]
                                               ).hex
                                             })`,
                                           }
                                     }
                                   >
-                                    #{Math.floor(Math.random() * 900000)}
+                                    #{item.int_id}
                                   </div>
                                 </div>
                               </div>
@@ -234,7 +234,7 @@ const RecentSales = () => {
                             <div className="flex flex-col items-center justify-center">
                               <Image
                                 alt="pokemon"
-                                src={item.sprites.other.home.front_default}
+                                src={item.detail_market_pokemon.front_default}
                                 width={100}
                                 height={100}
                                 blurDataURL
@@ -249,15 +249,13 @@ const RecentSales = () => {
                                   height={30}
                                 />
                                 <span className="capitalize text-sm font-bold text-slate-300 ">
-                                  {getPriceToToken(
-                                    Math.floor(Math.random() * 500)
-                                  )}
+                                  {getPriceToToken(item.price)}
                                 </span>
                               </div>
                             </div>
                             <div>
                               <span className="capitalize text-sm font-bold text-slate-300">
-                                ${Math.floor(Math.random() * 500)}
+                                ${item.price}
                               </span>
                             </div>
                           </div>
@@ -271,14 +269,16 @@ const RecentSales = () => {
                                     Pokemon
                                   </span>
                                   <span className="text-md font-medium text-white">
-                                    #{Math.floor(Math.random() * 900000)}
+                                    #{item.int_id}
                                   </span>
                                 </div>
                                 <span className=" mt-1 text-xs font-bold text-slate-400">
-                                  Sold out by Shadow
+                                  {/* {item.buyer_id && getUser(item.buyer_id)} */}
+                                  {item.buyer_id &&
+                                    "Sold out by " + item.buyer?.user.username}
                                 </span>
                               </div>
-                              <Tooltip
+                              {/* <Tooltip
                                 placement="top"
                                 content={
                                   <div className="w-72 h-40 ">
@@ -333,11 +333,11 @@ const RecentSales = () => {
                                     fill="currentColor"
                                   ></path>
                                 </svg>
-                              </Tooltip>
+                              </Tooltip> */}
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                       <span className="px-2 text-slate-400 text-xs font-extrabold">
                         {Math.floor(Math.random() * 60) + " "}minute ago
                       </span>

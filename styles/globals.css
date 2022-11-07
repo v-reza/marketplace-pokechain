@@ -56,6 +56,14 @@ a {
 #btn_login:hover {
   background: #eb6f3a
 }
+#toogle_toast button{
+  background: rgb(31 41 55);
+  margin-top:3px;
+}
+#toogle_toast button:hover{
+  color: white;
+  margin-top:3px;
+}
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;

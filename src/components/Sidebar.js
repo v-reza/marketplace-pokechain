@@ -3,13 +3,19 @@
 import { Fragment, useEffect, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import { MenuAlt1Icon, ScaleIcon, XIcon } from "@heroicons/react/outline";
-import { ChevronDownIcon } from "@heroicons/react/solid";
+import { ChevronDownIcon, SelectorIcon } from "@heroicons/react/solid";
 import { Tooltip } from "flowbite-react";
 import { classNames } from "@/utils/constant";
 import { navigation } from "@/utils/navigation";
 import LoginModal from "./AuthPages/Login";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import useUser from "@/hooks/useUser";
+import { fetchUser, logout } from "@/contexts/AuthActions";
+import { setNotification } from "@/redux/action/notificationActions";
+import useAuth from "@/hooks/useAuth";
+import { useDispatch } from "react-redux";
+import { useAxios } from "@/utils/axiosInstance";
 
 const SidebarMainContent = ({ children }) => {
   return <>{children}</>;
@@ -19,7 +25,39 @@ const Sidebar = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [largeSidebarOpen, setLargeSidebarOpen] = useState(true);
   const [openAuthModal, setOpenAuthModal] = useState(false);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setIsMessage] = useState(null);
+  const { isAuthenticated } = useAuth();
+  const [isAuth, setIsAuth] = useState(false);
+  const { currentUser } = useUser();
   const router = useRouter();
+  const { dispatch } = useAuth();
+  const dispatchRedux = useDispatch();
+  const axiosInstance = useAxios();
+  console.log(isAuth);
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    logout(
+      { dispatch, dispatchRedux },
+      { refresh_token: currentUser?.refresh_token },
+      ({ error, loading, message }) => {
+        setError(error);
+        setIsLoading(loading);
+        setIsMessage(message);
+      }
+    );
+  };
+
+  const fetchUserAccessToken = (e) => {
+    e.preventDefault();
+    fetchUser(axiosInstance);
+  };
+
+  useEffect(() => {
+    setIsAuth(isAuthenticated);
+  }, [isAuthenticated]);
 
   return (
     <>
@@ -161,23 +199,63 @@ const Sidebar = ({ children }) => {
                   <div className="absolute bottom-0 left-0 right-0 pb-3 flex-shrink-0">
                     <div className="px-4 flex-shrink-0 w-full h-max">
                       <Link href="/auth/login">
-                        <div
-                          className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent text-base font-medium text-white shadow focus:outline-none"
-                          id="btn_login"
-                        >
-                          {/* <LoginIcon className="w-5 h-5" /> */}
-                          <svg viewBox="0 0 24 24" width="16" height="16">
-                            <path
-                              d="M6.75 3.25A4.75 4.75 0 0 0 2 8v8a4.75 4.75 0 0 0 4.75 4.75H14A4.75 4.75 0 0 0 18.75 16a.75.75 0 0 0-1.5 0A3.25 3.25 0 0 1 14 19.25H9.464A4.733 4.733 0 0 0 10.75 16V8c0-1.257-.488-2.4-1.286-3.25H14A3.25 3.25 0 0 1 17.25 8a.75.75 0 0 0 1.5 0A4.75 4.75 0 0 0 14 3.25H6.75Z"
-                              fill="currentColor"
-                            ></path>
-                            <path
-                              d="M15.53 9.47a.75.75 0 0 1 0 1.06l-.72.72h6.44a.75.75 0 0 1 0 1.5h-6.44l.72.72a.75.75 0 1 1-1.06 1.06l-1.293-1.293a1.75 1.75 0 0 1 0-2.474L14.47 9.47a.75.75 0 0 1 1.06 0Z"
-                              fill="currentColor"
-                            ></path>
-                          </svg>
-                          <span className="font-medium">Log in</span>
-                        </div>
+                        {isAuth ? (
+                          <div className="flex-shrink-0  flex  p-5 ml-4">
+                            <a
+                              href="#"
+                              className="flex-shrink-0 w-full group block"
+                            >
+                              <div className="flex">
+                                <div>
+                                  <img
+                                    className="inline-block h-9 w-9 rounded-full"
+                                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                    alt=""
+                                  />
+                                </div>
+                                {largeSidebarOpen && (
+                                  <div className="ml-3">
+                                    <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                                      {currentUser?.email}
+                                    </p>
+                                    <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
+                                      View profile
+                                    </p>
+                                  </div>
+                                )}
+                                <div className="ml-3">
+                                  <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                                    {currentUser?.email}
+                                  </p>
+                                  <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
+                                    View profile
+                                  </p>
+                                </div>
+                              </div>
+                            </a>
+                          </div>
+                        ) : (
+                          <div className="px-4 flex-shrink-0 w-full">
+                            <div
+                              className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent text-base font-medium text-white shadow focus:outline-none"
+                              id="btn_login"
+                            >
+                              <svg viewBox="0 0 24 24" width="16" height="16">
+                                <path
+                                  d="M6.75 3.25A4.75 4.75 0 0 0 2 8v8a4.75 4.75 0 0 0 4.75 4.75H14A4.75 4.75 0 0 0 18.75 16a.75.75 0 0 0-1.5 0A3.25 3.25 0 0 1 14 19.25H9.464A4.733 4.733 0 0 0 10.75 16V8c0-1.257-.488-2.4-1.286-3.25H14A3.25 3.25 0 0 1 17.25 8a.75.75 0 0 0 1.5 0A4.75 4.75 0 0 0 14 3.25H6.75Z"
+                                  fill="currentColor"
+                                ></path>
+                                <path
+                                  d="M15.53 9.47a.75.75 0 0 1 0 1.06l-.72.72h6.44a.75.75 0 0 1 0 1.5h-6.44l.72.72a.75.75 0 1 1-1.06 1.06l-1.293-1.293a1.75 1.75 0 0 1 0-2.474L14.47 9.47a.75.75 0 0 1 1.06 0Z"
+                                  fill="currentColor"
+                                ></path>
+                              </svg>
+                              {largeSidebarOpen && (
+                                <span className="font-medium">Log in</span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </Link>
                     </div>
                   </div>
@@ -307,31 +385,172 @@ const Sidebar = ({ children }) => {
               </div>
             </nav>
           </div>
-          <div
-            className="flex-shrink-0 flex pb-5 bg-gray-900"
-            onClick={() => setOpenAuthModal(true)}
-          >
-            <div className="px-4 flex-shrink-0 w-full">
-              <div
-                className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent  text-base font-medium text-white shadow focus:outline-none"
-                id="btn_login"
-              >
-                <svg viewBox="0 0 24 24" width="16" height="16">
-                  <path
-                    d="M6.75 3.25A4.75 4.75 0 0 0 2 8v8a4.75 4.75 0 0 0 4.75 4.75H14A4.75 4.75 0 0 0 18.75 16a.75.75 0 0 0-1.5 0A3.25 3.25 0 0 1 14 19.25H9.464A4.733 4.733 0 0 0 10.75 16V8c0-1.257-.488-2.4-1.286-3.25H14A3.25 3.25 0 0 1 17.25 8a.75.75 0 0 0 1.5 0A4.75 4.75 0 0 0 14 3.25H6.75Z"
-                    fill="currentColor"
-                  ></path>
-                  <path
-                    d="M15.53 9.47a.75.75 0 0 1 0 1.06l-.72.72h6.44a.75.75 0 0 1 0 1.5h-6.44l.72.72a.75.75 0 1 1-1.06 1.06l-1.293-1.293a1.75 1.75 0 0 1 0-2.474L14.47 9.47a.75.75 0 0 1 1.06 0Z"
-                    fill="currentColor"
-                  ></path>
-                </svg>
-                {largeSidebarOpen && (
-                  <span className="font-medium">Log in</span>
-                )}
+
+          {!isAuth ? (
+            <div
+              className="flex-shrink-0 flex pb-5 bg-gray-900"
+              onClick={() => setOpenAuthModal(true)}
+            >
+              <div className="px-4 flex-shrink-0 w-full">
+                <div
+                  className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent  text-base font-medium text-white shadow focus:outline-none"
+                  id="btn_login"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16">
+                    <path
+                      d="M6.75 3.25A4.75 4.75 0 0 0 2 8v8a4.75 4.75 0 0 0 4.75 4.75H14A4.75 4.75 0 0 0 18.75 16a.75.75 0 0 0-1.5 0A3.25 3.25 0 0 1 14 19.25H9.464A4.733 4.733 0 0 0 10.75 16V8c0-1.257-.488-2.4-1.286-3.25H14A3.25 3.25 0 0 1 17.25 8a.75.75 0 0 0 1.5 0A4.75 4.75 0 0 0 14 3.25H6.75Z"
+                      fill="currentColor"
+                    ></path>
+                    <path
+                      d="M15.53 9.47a.75.75 0 0 1 0 1.06l-.72.72h6.44a.75.75 0 0 1 0 1.5h-6.44l.72.72a.75.75 0 1 1-1.06 1.06l-1.293-1.293a1.75 1.75 0 0 1 0-2.474L14.47 9.47a.75.75 0 0 1 1.06 0Z"
+                      fill="currentColor"
+                    ></path>
+                  </svg>
+                  {largeSidebarOpen && (
+                    <span className="font-medium">Log in</span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <Menu
+              as="div"
+              className="pb-5 px-3 relative inline-block text-left ml-4"
+            >
+              <div>
+                <Menu.Button className="group w-full bg-gray-100 rounded-md px-3.5 py-2 text-sm text-left font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-purple-500">
+                  <span className="flex w-full justify-between items-center">
+                    <span className="flex min-w-0 items-center justify-between space-x-3">
+                      <img
+                        className="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0"
+                        src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3&w=256&h=256&q=80"
+                        alt=""
+                      />
+                      {largeSidebarOpen && (
+                        <span className="flex-1 flex flex-col min-w-0">
+                          <span className="text-gray-900 text-sm font-medium truncate">
+                            Jessy Schwarz
+                          </span>
+                          <span className="text-gray-500 text-sm truncate">
+                            @jessyschwarz
+                          </span>
+                        </span>
+                      )}
+                    </span>
+                    
+                  </span>
+                </Menu.Button>
+              </div>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="top-2 transform -translate-y-full absolute right-0 w-56 -mt-4 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="py-1">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          href="#"
+                          className={classNames(
+                            active
+                              ? "bg-gray-100 text-gray-900"
+                              : "text-gray-700",
+                            "block px-4 py-2 text-sm"
+                          )}
+                        >
+                          View profile
+                        </a>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          href="#"
+                          className={classNames(
+                            active
+                              ? "bg-gray-100 text-gray-900"
+                              : "text-gray-700",
+                            "block px-4 py-2 text-sm"
+                          )}
+                        >
+                          Settings
+                        </a>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          href="#"
+                          className={classNames(
+                            active
+                              ? "bg-gray-100 text-gray-900"
+                              : "text-gray-700",
+                            "block px-4 py-2 text-sm"
+                          )}
+                        >
+                          Notifications
+                        </a>
+                      )}
+                    </Menu.Item>
+                  </div>
+                  <div className="py-1">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          href="#"
+                          className={classNames(
+                            active
+                              ? "bg-gray-100 text-gray-900"
+                              : "text-gray-700",
+                            "block px-4 py-2 text-sm"
+                          )}
+                        >
+                          Get desktop app
+                        </a>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          href="#"
+                          className={classNames(
+                            active
+                              ? "bg-gray-100 text-gray-900"
+                              : "text-gray-700",
+                            "block px-4 py-2 text-sm"
+                          )}
+                        >
+                          Support
+                        </a>
+                      )}
+                    </Menu.Item>
+                  </div>
+                  <div className="py-1">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          href="#"
+                          className={classNames(
+                            active
+                              ? "bg-gray-100 text-gray-900"
+                              : "text-gray-700",
+                            "block px-4 py-2 text-sm"
+                          )}
+                        >
+                          Logout
+                        </a>
+                      )}
+                    </Menu.Item>
+                  </div>
+                </Menu.Items>
+              </Transition>
+            </Menu>
+          )}
         </div>
 
         <div
@@ -352,76 +571,91 @@ const Sidebar = ({ children }) => {
             <div className="flex-1 px-4 flex justify-end sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8 bg-gray-900 border-b border-slate-600">
               <div className="ml-4 flex items-center md:ml-6">
                 {/* Profile dropdown */}
-                <Menu as="div" className="ml-3 relative">
-                  <div>
-                    <Menu.Button className="max-w-xs bg-white rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 lg:p-2 lg:rounded-md lg:hover:bg-gray-50">
-                      <img
-                        className="h-8 w-8 rounded-full"
-                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        alt=""
-                      />
-                      <span className="hidden ml-3 text-gray-700 text-sm font-medium lg:block">
-                        <span className="sr-only">Open user menu for </span>
-                        Emilia Birch
-                      </span>
-                      <ChevronDownIcon
-                        className="hidden flex-shrink-0 ml-1 h-5 w-5 text-gray-400 lg:block"
-                        aria-hidden="true"
-                      />
-                    </Menu.Button>
-                  </div>
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            Your Profile
-                          </a>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            Settings
-                          </a>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            Logout
-                          </a>
-                        )}
-                      </Menu.Item>
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
+                {isAuth != null && isAuth != "null" && (
+                  <Menu as="div" className="ml-3 relative">
+                    <div>
+                      <Menu.Button className="max-w-xs bg-white rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 lg:p-2 lg:rounded-md lg:hover:bg-gray-50">
+                        <img
+                          className="h-8 w-8 rounded-full"
+                          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                          alt=""
+                        />
+                        <span className="hidden ml-3 text-gray-700 text-sm font-medium lg:block">
+                          <span className="sr-only">Open user menu for </span>
+                          Emilia Birch
+                        </span>
+                        <ChevronDownIcon
+                          className="hidden flex-shrink-0 ml-1 h-5 w-5 text-gray-400 lg:block"
+                          aria-hidden="true"
+                        />
+                      </Menu.Button>
+                    </div>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              Your Profile
+                            </a>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              onClick={fetchUserAccessToken}
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              Test feth user yang membutuhkan accestoken
+                            </a>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              Settings
+                            </a>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              onClick={handleLogout}
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              Logout
+                            </a>
+                          )}
+                        </Menu.Item>
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
+                )}
               </div>
             </div>
           </div>
