@@ -11,7 +11,9 @@ const nextConfig = {
     CI: false,
     GENERATE_SOURCEMAP: false,
     currency: "USD",
-    formatCurrency: "$ "
+    formatCurrency: "$ ",
+    apiBaseUrl: "https://api.pokechain.games/api/",
+    versionApi: "v1"
   },
   images: {
     domains: ["raw.githubusercontent.com"]
