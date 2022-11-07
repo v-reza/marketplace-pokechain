@@ -16,9 +16,11 @@ import { Tooltip } from "flowbite-react";
 import Image from "next/image";
 import bgToken from "@/dist/token.png";
 import { useRouter } from "next/router";
+import { useQuery, useQueryClient } from "react-query";
+import { getAllPokemon } from "./schema/query";
 
 const ListPokemon = () => {
-  
+  const queryClient = useQueryClient();
   const filter = [
     { id: 1, name: "Lowest Price", active: true },
     { id: 2, name: "Highest Price", active: false },
@@ -28,48 +30,31 @@ const ListPokemon = () => {
   ];
   const router = useRouter();
   const [pages, setPages] = useState(1);
+  const {
+    isLoading,
+    isError,
+    error,
+    data: allPokemon,
+    isFetching,
+    isPreviousData,
+    refetch
+  } = useQuery({
+    queryKey: ["allPokemon", pages],
+    queryFn: () => getAllPokemon(pages),
+    keepPreviousData: true,
+  });
 
   const [selected, setSelected] = useState(filter[0]);
-  const [pokemon, setPokemon] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [randomOffset, setRandomOffset] = useState(
-    Math.floor(Math.random() * 800)
-  );
+
   useEffect(() => {
     setPages(router.query.page ? router.query.page : 1);
   }, [router.query.page]);
 
-  useEffect(() => {
-    const getPokemon = async () => {
-      try {
-        const res = await axios.get(
-          `https://pokeapi.co/api/v2/pokemon/?offset=${randomOffset}&limit=12`
-        );
-        if (res.data.results.length > 0) {
-          await res.data.results.map(async (item) => {
-            await axios
-              .get(item.url)
-              .then((res) =>
-                setPokemon((prev) => [
-                  ...prev.filter((item) => item.name !== res.data.name),
-                  res.data,
-                ])
-              );
-          });
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getPokemon();
-  }, []);
   return (
     <div>
       <div className="relative py-7 px-8 lg:px-12">
         <div className="pt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <span className="text-white font-bold text-lg">582,020 Pokemon</span>
+          <span className="text-white font-bold text-lg">{!isLoading ? allPokemon.total : 0} Pokemon</span>
           <Listbox value={selected} onChange={setSelected}>
             {({ open }) => (
               <>
@@ -141,8 +126,8 @@ const ListPokemon = () => {
           </Listbox>
         </div>
         <div className="mt-4 pb-10 mx-auto max-w-md px-4 grid gap-4 lg:gap-12 sm:max-w-4xl sm:px-6 lg:px-8 sm:grid-cols-2  md:max-w-5xl md:grid-cols-2  xl:grid-cols-4 lg:max-w-full">
-          {!loading
-            ? pokemon.map((item, index) => (
+          {!isLoading
+            ? allPokemon.results.map((item, index) => (
                 <div
                   className="flex flex-col items-start space-y-2"
                   key={index}
@@ -155,7 +140,7 @@ const ListPokemon = () => {
                       className={`h-56 w-full bg-opacity-25 rounded-t-lg shadow-lg `}
                       style={{
                         backgroundImage: `linear-gradient(180deg, rgba(175,219,27,0),${
-                          getPokemonElementType(item.types[0].type.name).rgba
+                          getPokemonElementType(item.element.split(",")[0]).rgba
                         })`,
                       }}
                     >
@@ -165,10 +150,9 @@ const ListPokemon = () => {
                             <div
                               className={`flex items-center  bg-slate-800 rounded-md px-2 w-max py-1 space-x-1`}
                             >
-                              {item.types.map((element, index) => {
-                                const elementImage = getPokemonElementType(
-                                  element.type.name
-                                );
+                              {item.element.split(",").map((element, index) => {
+                                const elementImage =
+                                  getPokemonElementType(element);
                                 return (
                                   <div
                                     key={index}
@@ -178,7 +162,7 @@ const ListPokemon = () => {
                                       placement="top"
                                       content={
                                         <span className="capitalize">
-                                          {element.type.name}
+                                          {element}
                                         </span>
                                       }
                                     >
@@ -196,30 +180,30 @@ const ListPokemon = () => {
 
                               <div
                                 className={`flex items-center -mt-1 text-md !ml-2 ${
-                                  item.types.length > 0 &&
+                                  item.element.split(",").length > 0 &&
                                   "text-transparent bg-clip-text"
                                 }`}
                                 style={
-                                  item.types.length === 1
+                                  item.element.split(",").length === 1
                                     ? {
                                         color: getPokemonElementType(
-                                          item.types[0].type.name
+                                          item.element.split(",")[0]
                                         ).hex,
                                       }
                                     : {
                                         backgroundImage: `linear-gradient(to right, ${
                                           getPokemonElementType(
-                                            item.types[0].type.name
+                                            item.element.split(",")[0]
                                           ).hex
                                         }, ${
                                           getPokemonElementType(
-                                            item.types[1].type.name
+                                            item.element.split(",")[1]
                                           ).hex
                                         })`,
                                       }
                                 }
                               >
-                                #{Math.floor(Math.random() * 900000)}
+                                #{item.increment_id}
                               </div>
                             </div>
                           </div>
@@ -229,7 +213,7 @@ const ListPokemon = () => {
                         <div className="flex flex-col items-center justify-center">
                           <Image
                             alt="pokemon"
-                            src={item.sprites.other.home.front_default}
+                            src={item.front_default}
                             width={100}
                             height={100}
                             blurDataURL
@@ -244,13 +228,13 @@ const ListPokemon = () => {
                               height={30}
                             />
                             <span className="capitalize text-sm font-bold text-slate-300 ">
-                              {getPriceToToken(Math.floor(Math.random() * 500))}
+                              {getPriceToToken(item.price)}
                             </span>
                           </div>
                         </div>
                         <div>
                           <span className="capitalize text-sm font-bold text-slate-300">
-                            ${Math.floor(Math.random() * 500)}
+                            ${item.price}
                           </span>
                         </div>
                       </div>
@@ -264,7 +248,7 @@ const ListPokemon = () => {
                                 Pokemon
                               </span>
                               <span className="text-md font-medium text-white">
-                                #{Math.floor(Math.random() * 900000)}
+                                #{item.increment_id}
                               </span>
                             </div>
                           </div>
@@ -275,6 +259,10 @@ const ListPokemon = () => {
                                 <div className="px-4">
                                   <div className="flex flex-col">
                                     <span className="text-md font-bold text-slate-300 capitalize">
+                                      Seller :{" "}
+                                      {item.marketplace.seller.user.username}
+                                    </span>
+                                    <span className="text-md font-bold text-slate-300 capitalize">
                                       Pokemon Name : {item.name}
                                     </span>
                                     <div className="mt-2 flex flex-col">
@@ -283,11 +271,10 @@ const ListPokemon = () => {
                                       </span>
                                       <span className="text-md font-bold text-slate-300 capitalize">
                                         Element :{" "}
-                                        {item.types
+                                        {item.element
+                                          .split(",")
                                           .map((el, index) => (
-                                            <span key={index}>
-                                              {el.type.name}{" "}
-                                            </span>
+                                            <span key={index}>{el} </span>
                                           ))
                                           .reduce((prev, curr) => [
                                             prev,
@@ -296,13 +283,13 @@ const ListPokemon = () => {
                                           ])}
                                       </span>
                                       <span className="text-md font-bold text-slate-300 capitalize">
-                                        Health : {item.stats[0].base_stat}
+                                        Health : {item.health}
                                       </span>
                                       <span className="text-md font-bold text-slate-300 capitalize">
-                                        Attack : {item.stats[1].base_stat}
+                                        Attack : {item.attack}
                                       </span>
                                       <span className="text-md font-bold text-slate-300 capitalize">
-                                        Defense : {item.stats[2].base_stat}
+                                        Defense : {item.defense}
                                       </span>
                                     </div>
                                   </div>
@@ -343,12 +330,12 @@ const ListPokemon = () => {
           <div className="flex items-center space-x-4">
             <div
               className={`ml-4 p-2  ${
-                pages > 1
+                allPokemon?.hasPrevious
                   ? "cursor-pointer bg-gray-700 hover:bg-gray-600"
                   : "cursor-not-allowed bg-gray-800"
               } rounded-md`}
               onClick={() =>
-                pages > 1 &&
+                allPokemon?.hasPrevious &&
                 router.replace({
                   pathname: router.pathname,
                   query: { page: parseInt(pages) - 1 },
@@ -364,10 +351,17 @@ const ListPokemon = () => {
               onChange={() => {}}
               className="w-12 h-10 text-center text-md font-bold text-white bg-gray-700 rounded-md"
             />
-            <span className="text-md font-medium text-white">of 29,234</span>
+            <span className="text-md font-medium text-white">
+              of {allPokemon?.totalPages}
+            </span>
             <div
-              className="cursor-pointer ml-4 p-2 bg-gray-700 hover:bg-gray-600 rounded-md"
+              className={`ml-4 p-2  ${
+                allPokemon?.hasNext
+                  ? "cursor-pointer bg-gray-700 hover:bg-gray-600"
+                  : "cursor-not-allowed bg-gray-800"
+              } rounded-md`}
               onClick={() =>
+                allPokemon?.hasNext &&
                 router.replace({
                   pathname: router.pathname,
                   query: { page: parseInt(pages) + 1 },
