@@ -1,28 +1,32 @@
+import pikachu from "@/dist/pikachu.png"
+import pokeball from "@/dist/pokeball.png"
+import tabBundle from "@/dist/tab-bundle.png"
+import token from "@/dist/token.png"
 const navigation = [
   {
     name: "Pokemons",
     href: "/pokemon",
-    icon: "/assets/images/pikachu.png",
+    icon: pikachu,
     current: false,
     customSize: true,
   },
   {
     name: "Items",
     href: "/items",
-    icon: "/assets/images/pokeball.png",
+    icon: pokeball,
     current: false,
   },
   {
     name: "Bundles",
     href: "/bundles",
-    icon: "/assets/images/tab-bundle.png",
+    icon: tabBundle,
     current: false,
     customSize: true,
   },
   {
     name: "Tokens",
     href: "/token",
-    icon: "/assets/images/token.png",
+    icon: token,
     current: false,
     customSize: true,
   },
