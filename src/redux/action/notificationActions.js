@@ -1,14 +1,19 @@
 import {
-  loadIsStart,
-  loadIsSuccess,
-  loadIsFailed,
+  notificationStart,
+  notificationSuccess,
+  notificationFailed,
+  notificationReset
 } from "@/redux/reducer/notificationReducer";
 
 export const setNotification = async (dispatch, data) => {
-  dispatch(loadIsStart());
+  dispatch(notificationStart());
   if (data.error) {
-    dispatch(loadIsFailed({ message: data.message }));
+    dispatch(notificationFailed({ message: data.message }));
   } else {
-    dispatch(loadIsSuccess({ message: data.message }));
+    dispatch(notificationSuccess({ message: data.message }));
   }
+};
+
+export const resetNotification = async (dispatch) => {
+  dispatch(notificationReset());
 };

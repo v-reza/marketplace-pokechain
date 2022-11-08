@@ -78,28 +78,22 @@ export const register = async (dispatch, data, cb) => {
   }
 };
 
-export const logout = async ({ dispatch, dispatchRedux }, data, cb) => {
+export const logout = async ({ dispatch, dispatchRedux }, data) => {
+  console.log(data);
   //cb = (callback)
   try {
-    const response = await publicRequest.delete("/auth/logout", { data });
-    const { msg } = response.data;
-    cb({
-      error: false,
-      loading: false,
-      message: msg,
+    const response = await publicRequest.delete("/auth/logout", {
+      data: { refresh_token: data },
     });
+    const { msg } = response.data;
     dispatch({ type: "LOGOUT" });
     localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
     if (msg) {
       setNotification(dispatchRedux, { message: msg, error: false });
     }
   } catch (e) {
     const { msg } = e.response.data;
-    cb({
-      error: true,
-      loading: false,
-      message: msg,
-    });
     if (msg) {
       setNotification(dispatch, { message: msg, error: true });
     }

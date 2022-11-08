@@ -1,18 +1,50 @@
 /* eslint-disable @next/next/no-img-element */
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon } from "@heroicons/react/outline";
 import { XIcon } from "@heroicons/react/solid";
 import Link from "next/link";
+import { AuthContext } from "@/contexts/AuthContext";
+import { useDispatch } from "react-redux";
+import { login } from "@/contexts/AuthActions";
+import { Spinner } from "flowbite-react";
 
 export default function LoginModal({ open, setOpen }) {
   const cancelButtonRef = useRef(null);
   const [form, setForm] = useState({
-    usernameORemail: "",
+    userOrEmail: "",
     password: "",
   });
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setIsMessage] = useState(null);
+  const { dispatch } = useContext(AuthContext);
+  const dispatchRedux = useDispatch();
 
-  const handleSubmit = () => {};
+  const handleLogin = async (e) => {
+    console.log('sa')
+    e.preventDefault();
+    await login(
+      { dispatch, dispatchRedux },
+      form,
+      ({ error, loading, message }) => {
+        setError(error);
+        setIsLoading(loading);
+        setIsMessage(message);
+        if (error == false) {
+          setOpen(false)
+        }
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (error == false) {
+      setForm({
+        userOrEmail: "",
+        password: "",
+      });
+    }
+  }, [error]);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -86,7 +118,7 @@ export default function LoginModal({ open, setOpen }) {
                     </h2>
                   </div>
                   <div className="bg-transparent py-8 px-2  rounded-lg sm:px-10">
-                    <form className="space-y-6" action="#" method="POST">
+                    <form className="space-y-6" onSubmit={handleLogin}>
                       <div>
                         <label
                           htmlFor="email"
@@ -101,11 +133,11 @@ export default function LoginModal({ open, setOpen }) {
                             type="text"
                             autoComplete="email"
                             required
-                            value={form.usernameORemail}
+                            value={form.userOrEmail}
                             onChange={(e) =>
                               setForm({
                                 ...form,
-                                usernameORemail: e.target.value,
+                                userOrEmail: e.target.value,
                               })
                             }
                             className="appearance-none block w-full px-3 py-1 sm:py-2 bg-slate-700 border border-slate-600 rounded-md shadow-sm  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -153,10 +185,17 @@ export default function LoginModal({ open, setOpen }) {
 
                       <div>
                         <button
-                          type="button"
+                          type="submit"
                           className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white  bg-[#3D00B7] hover:bg-[#3d00b7a1] focus:outline-none"
                         >
-                          Sign in
+                          {isLoading ? (
+                            <Spinner
+                              color="gray"
+                              aria-label="Purple spinner example"
+                            />
+                          ) : (
+                            "Sign in"
+                          )}
                         </button>
                       </div>
                     </form>
@@ -206,5 +245,4 @@ export default function LoginModal({ open, setOpen }) {
       </Dialog>
     </Transition.Root>
   );
- 
 }

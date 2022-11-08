@@ -5,13 +5,28 @@ import {
 } from "@heroicons/react/outline";
 import { Toast } from "flowbite-react";
 import useNotification from "@/hooks/useNotification";
+import { useEffect } from "react";
+import { resetNotification } from "@/redux/action/notificationActions";
+import { useDispatch } from "react-redux";
 
 export default function Notification() {
   const { isNotification, isSuccess, message } = useNotification();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (isNotification) {
+      setTimeout(() => {
+        resetNotification(dispatch);
+      }, 2000);
+    }
+  }, [isNotification]);
 
   return (
     <>
-      <div className={`z-50 ${isNotification ? 'fixed' : 'hidden'} right-4 top-4 margin-0  rounded-lg shadow-xl bg-gray-800`}>
+      <div
+        className={`z-50 ${
+          isNotification ? "fixed" : "hidden"
+        } right-4 top-4 margin-0  rounded-lg shadow-xl bg-gray-800`}
+      >
         <Toast style={{ backgroundColor: "rgb(31 41 55)" }}>
           <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-transparent">
             {isSuccess ? (
