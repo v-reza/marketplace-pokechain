@@ -36,6 +36,8 @@ const ListPokemon = () => {
     error,
     data: allPokemon,
     isFetching,
+    isRefetching,
+    isFetched,
     isPreviousData,
     refetch
   } = useQuery({
@@ -126,8 +128,8 @@ const ListPokemon = () => {
           </Listbox>
         </div>
         <div className="mt-4 pb-10 mx-auto max-w-md px-4 grid gap-4 lg:gap-12 sm:max-w-4xl sm:px-6 lg:px-8 sm:grid-cols-2  md:max-w-5xl md:grid-cols-2  xl:grid-cols-4 lg:max-w-full">
-          {!isLoading
-            ? allPokemon.results.map((item, index) => (
+          {!isFetching 
+            ? allPokemon.results?.map((item, index) => (
                 <div
                   className="flex flex-col items-start space-y-2"
                   key={index}
@@ -360,12 +362,16 @@ const ListPokemon = () => {
                   ? "cursor-pointer bg-gray-700 hover:bg-gray-600"
                   : "cursor-not-allowed bg-gray-800"
               } rounded-md`}
-              onClick={() =>
-                allPokemon?.hasNext &&
-                router.replace({
-                  pathname: router.pathname,
-                  query: { page: parseInt(pages) + 1 },
-                })
+              onClick={() => {
+                if (allPokemon?.hasNext) {
+                  // queryClient.refetchQueries("allPokemon")
+                  router.replace({
+                    pathname: router.pathname,
+                    query: { page: parseInt(pages) + 1 },
+                  })
+
+                }
+              }
               }
             >
               <ArrowRightIcon className="w-5 h-5 text-white" />
