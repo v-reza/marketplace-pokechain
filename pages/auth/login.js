@@ -4,12 +4,9 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Spinner } from "flowbite-react";
 import { useRouter } from "next/router";
-import { setNotification } from "@/redux/action/notificationActions";
 import useAuth from "@/hooks/useAuth";
 import { login } from "@/contexts/AuthActions";
-import { useCookies } from "react-cookie";
 import { useDispatch } from "react-redux";
-import useUser from "@/hooks/useUser";
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -22,7 +19,6 @@ export default function Login() {
   const router = useRouter();
   const { dispatch } = useAuth();
   const dispatchRedux = useDispatch();
-  const { access_token } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
