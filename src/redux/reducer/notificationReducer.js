@@ -8,25 +8,34 @@ const notificationSlice = createSlice({
     message: null,
   },
   reducers: {
-    loadIsStart: (state) => {
+    notificationStart: (state) => {
       state.isNotification = false;
       state.isSuccess = null;
       state.message = false;
     },
-    loadIsSuccess: (state, action) => {
+    notificationSuccess: (state, action) => {
       state.isNotification = true;
       state.isSuccess = true;
       state.message = action.payload.message;
     },
-    loadIsFailed: (state, action) => {
+    notificationFailed: (state, action) => {
       state.isNotification = true;
       state.isSuccess = false;
       state.message = action.payload.message;
     },
+    notificationReset: (state) => {
+      state.isNotification = false;
+      state.isSuccess = null;
+      state.message = null;
+    },
   },
 });
 
-export const { loadIsStart, loadIsSuccess, loadIsFailed } =
-  notificationSlice.actions;
+export const {
+  notificationStart,
+  notificationSuccess,
+  notificationFailed,
+  notificationReset,
+} = notificationSlice.actions;
 
 export default notificationSlice.reducer;

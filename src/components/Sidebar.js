@@ -19,7 +19,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import useUser from "@/hooks/useUser";
 import { fetchUser, logout } from "@/contexts/AuthActions";
-import { setNotification } from "@/redux/action/notificationActions";
 import useAuth from "@/hooks/useAuth";
 import { useDispatch } from "react-redux";
 import { useAxios } from "@/utils/axiosInstance";
@@ -33,9 +32,6 @@ const Sidebar = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [largeSidebarOpen, setLargeSidebarOpen] = useState(true);
   const [openAuthModal, setOpenAuthModal] = useState(false);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setIsMessage] = useState(null);
   const { isAuthenticated } = useAuth();
   const [isAuth, setIsAuth] = useState(false);
   const { currentUser } = useUser();
@@ -43,17 +39,12 @@ const Sidebar = ({ children }) => {
   const { dispatch } = useAuth();
   const dispatchRedux = useDispatch();
   const axiosInstance = useAxios();
-
+  const refresh_token = currentUser?.refresh_token
   const handleLogout = (e) => {
     e.preventDefault();
     logout(
       { dispatch, dispatchRedux },
-      { refresh_token: currentUser?.refresh_token },
-      ({ error, loading, message }) => {
-        setError(error);
-        setIsLoading(loading);
-        setIsMessage(message);
-      }
+      refresh_token
     );
   };
 
@@ -513,25 +504,27 @@ const Sidebar = ({ children }) => {
                   <div className="py-1">
                     <Menu.Item>
                       {({ active }) => (
-                        <a
-                          href="#"
-                          className={classNames(
-                            active
-                              ? "bg-slate-600/50 text-slate-300"
-                              : "text-white",
-                            !largeSidebarOpen &&
-                              "flex items-center justify-center",
-                            "block px-4 py-2 text-sm"
-                          )}
-                        >
-                          {!largeSidebarOpen ? (
-                            <Tooltip content="Logout" placement="top">
-                              <LogoutIcon className="w-6 h-6" />
-                            </Tooltip>
-                          ) : (
-                            <span>Log out</span>
-                          )}
-                        </a>
+                        <div onClick={handleLogout}>
+                          <a
+                            href="#"
+                            className={classNames(
+                              active
+                                ? "bg-slate-600/50 text-slate-300"
+                                : "text-white",
+                              !largeSidebarOpen &&
+                                "flex items-center justify-center",
+                              "block px-4 py-2 text-sm"
+                            )}
+                          >
+                            {!largeSidebarOpen ? (
+                              <Tooltip content="Logout" placement="top">
+                                <LogoutIcon className="w-6 h-6" />
+                              </Tooltip>
+                            ) : (
+                              <span>Log out</span>
+                            )}
+                          </a>
+                        </div>
                       )}
                     </Menu.Item>
                   </div>
@@ -629,15 +622,16 @@ const Sidebar = ({ children }) => {
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                            <a
-                              onClick={handleLogout}
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
-                              )}
-                            >
-                              Logout
-                            </a>
+                            <div onClick={handleLogout}>
+                              <a
+                                className={classNames(
+                                  active ? "bg-gray-100" : "",
+                                  "block px-4 py-2 text-sm text-gray-700"
+                                )}
+                              >
+                                Logout
+                              </a>
+                            </div>
                           )}
                         </Menu.Item>
                       </Menu.Items>
