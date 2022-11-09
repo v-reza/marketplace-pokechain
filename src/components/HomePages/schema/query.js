@@ -6,3 +6,10 @@ export const getRecentSales = async (type = "pokemon") => {
   );
   return response.data;
 };
+
+export const getRecentListings = async (type = "pokemon") => {
+  const response = await publicRequest.get(
+    `/marketplace/recent-listings?type=${type}`
+  );
+  return response.data;
+}
