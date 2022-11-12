@@ -17,6 +17,8 @@ import { Tooltip } from "flowbite-react";
 import Image from "next/image";
 import bgToken from "@/dist/token.png";
 import { useRouter } from "next/router";
+import { useQuery, useQueryClient } from "react-query";
+import { getAllItems } from "./schema/query";
 
 const ListItems = (props) => {
   const { items } = props;
@@ -29,48 +31,41 @@ const ListItems = (props) => {
   ];
   const router = useRouter();
   const [pages, setPages] = useState(1);
+  const {
+    isLoading,
+    isError,
+    error,
+    data: allItems,
+    isFetching,
+    isRefetching,
+    isFetched,
+    isPreviousData,
+    refetch,
+  } = useQuery({
+    queryKey: ["allItems", pages],
+    queryFn: () => getAllItems(pages),
+    keepPreviousData: true,
+  });
 
   const [selected, setSelected] = useState(filter[0]);
-  const [pokemon, setPokemon] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [randomOffset, setRandomOffset] = useState(
-    Math.floor(Math.random() * 800)
-  );
-  useEffect(() => {
-    setPages(router.query.page ? router.query.page : 1);
-  }, [router.query.page]);
 
   useEffect(() => {
-    const getPokemon = async () => {
-      try {
-        const res = await axios.get(
-          `https://pokeapi.co/api/v2/pokemon/?offset=${randomOffset}&limit=12`
-        );
-        if (res.data.results.length > 0) {
-          await res.data.results.map(async (item) => {
-            await axios
-              .get(item.url)
-              .then((res) =>
-                setPokemon((prev) => [
-                  ...prev.filter((item) => item.name !== res.data.name),
-                  res.data,
-                ])
-              );
-          });
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getPokemon();
-  }, []);
+    setPages(router.query.page ? router.query.page : 1);
+    if (pages > allItems?.totalPages) {
+      router.replace({
+        pathname: router.pathname,
+        query: { page: allItems?.totalPages },
+      });
+    }
+  }, [router.query.page, allItems?.totalPages]);
+
   return (
     <div>
       <div className="relative py-7 px-8 lg:px-12">
         <div className="pt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <span className="text-white font-bold text-lg">365,170 Items</span>
+          <span className="text-white font-bold text-lg">
+            {allItems?.total} Items
+          </span>
           <Listbox value={selected} onChange={setSelected}>
             {({ open }) => (
               <>
@@ -142,8 +137,8 @@ const ListItems = (props) => {
           </Listbox>
         </div>
         <div className="mt-4 pb-10 mx-auto max-w-md px-4 grid gap-4 lg:gap-12 sm:max-w-4xl sm:px-6 lg:px-8 sm:grid-cols-2  md:max-w-5xl md:grid-cols-2  xl:grid-cols-4 lg:max-w-full">
-          {!loading
-            ? items.map((item, index) => (
+          {!isFetching
+            ? allItems.results.map((item, index) => (
                 <div
                   className="flex flex-col items-start space-y-2"
                   key={index}
@@ -156,7 +151,7 @@ const ListItems = (props) => {
                       className={`h-56 w-full bg-opacity-25 rounded-t-lg shadow-lg `}
                       style={{
                         backgroundImage: `linear-gradient(180deg, rgba(175,219,27,0),${
-                          getItemType(item.type).rgba
+                          getItemType(item.name).rgba
                         })`,
                       }}
                     >
@@ -174,21 +169,25 @@ const ListItems = (props) => {
                                   placement="top"
                                   content={
                                     <span className="capitalize">
-                                      {getItemType(item.type).detail.rarity.name}
+                                      {
+                                        getItemType(item.name).detail.rarity
+                                          .name
+                                      }
                                     </span>
                                   }
                                 >
-                                 {getItemType(item.type).detail.rarity.svg} 
+                                  {getItemType(item.name).detail.rarity.svg}
                                 </Tooltip>
                               </div>
 
                               <div
                                 className={`flex items-center  text-sm font-extrabold !ml-2 `}
                                 style={{
-                                  color: getItemType(item.type).detail.rarity.hex,
+                                  color: getItemType(item.name).detail.rarity
+                                    .hex,
                                 }}
                               >
-                                {getItemType(item.type).detail.rarity.name}
+                                {getItemType(item.name).detail.rarity.name}
                               </div>
                             </div>
                           </div>
@@ -198,7 +197,7 @@ const ListItems = (props) => {
                         <div className="flex flex-col items-center justify-center">
                           <Image
                             alt="item"
-                            src={getItemType(item.type).img}
+                            src={getItemType(item.name).img}
                             width={100}
                             height={100}
                             blurDataURL
@@ -230,7 +229,7 @@ const ListItems = (props) => {
                           <div className="flex flex-col">
                             <div className="flex items-center space-x-1 ">
                               <span className="text-md font-medium text-white capitalize">
-                                {item.type.replace("-", " ")}
+                                {item.name.replace("-", " ")}
                               </span>
                               <span className="text-md font-medium text-white">
                                 #{Math.floor(Math.random() * 900000)}
@@ -256,12 +255,12 @@ const ListItems = (props) => {
           <div className="flex items-center space-x-4">
             <div
               className={`ml-4 p-2  ${
-                pages > 1
+                allItems?.hasPrevious
                   ? "cursor-pointer bg-gray-700 hover:bg-gray-600"
                   : "cursor-not-allowed bg-gray-800"
               } rounded-md`}
               onClick={() =>
-                pages > 1 &&
+                allItems?.hasPrevious &&
                 router.replace({
                   pathname: router.pathname,
                   query: { page: parseInt(pages) - 1 },
@@ -277,15 +276,24 @@ const ListItems = (props) => {
               onChange={() => {}}
               className="w-12 h-10 text-center text-md font-bold text-white bg-gray-700 rounded-md"
             />
-            <span className="text-md font-medium text-white">of 29,234</span>
+            <span className="text-md font-medium text-white">
+              of {allItems?.totalPages}
+            </span>
             <div
-              className="cursor-pointer ml-4 p-2 bg-gray-700 hover:bg-gray-600 rounded-md"
-              onClick={() =>
-                router.replace({
-                  pathname: router.pathname,
-                  query: { page: parseInt(pages) + 1 },
-                })
-              }
+              className={`ml-4 p-2  ${
+                allItems?.hasNext
+                  ? "cursor-pointer bg-gray-700 hover:bg-gray-600"
+                  : "cursor-not-allowed bg-gray-800"
+              } rounded-md`}
+              onClick={() => {
+                if (allItems?.hasNext) {
+                  // queryClient.refetchQueries("allPokemon")
+                  router.replace({
+                    pathname: router.pathname,
+                    query: { page: parseInt(pages) + 1 },
+                  });
+                }
+              }}
             >
               <ArrowRightIcon className="w-5 h-5 text-white" />
             </div>
