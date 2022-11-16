@@ -12,4 +12,4 @@ export const getRecentListings = async (type = "pokemon") => {
     `/marketplace/recent-listings?type=${type}`
   );
   return response.data;
-}
+};

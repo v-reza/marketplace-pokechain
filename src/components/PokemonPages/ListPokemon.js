@@ -6,11 +6,8 @@ import {
   SelectorIcon,
 } from "@heroicons/react/solid";
 import React, { Fragment, useEffect, useState } from "react";
-import {
-  classNames,
-  getPokemonElementType,
-  getPriceToToken,
-} from "@/utils/constant";
+import { classNames, getPriceToToken } from "@/utils/constant";
+import { getPokemonElementType } from "constant-pokechain";
 import axios from "axios";
 import { Tooltip } from "flowbite-react";
 import Image from "next/image";
@@ -18,6 +15,7 @@ import bgToken from "@/dist/token.png";
 import { useRouter } from "next/router";
 import { useQuery, useQueryClient } from "react-query";
 import { getAllPokemon } from "./schema/query";
+import moment from "moment";
 
 const ListPokemon = () => {
   const queryClient = useQueryClient();
@@ -39,7 +37,7 @@ const ListPokemon = () => {
     isRefetching,
     isFetched,
     isPreviousData,
-    refetch
+    refetch,
   } = useQuery({
     queryKey: ["allPokemon", pages],
     queryFn: () => getAllPokemon(pages),
@@ -56,7 +54,9 @@ const ListPokemon = () => {
     <div>
       <div className="relative py-7 px-8 lg:px-12">
         <div className="pt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <span className="text-white font-bold text-lg">{!isLoading ? allPokemon.total : 0} Pokemon</span>
+          <span className="text-white font-bold text-lg">
+            {!isLoading ? allPokemon.total : 0} Pokemon
+          </span>
           <Listbox value={selected} onChange={setSelected}>
             {({ open }) => (
               <>
@@ -128,7 +128,7 @@ const ListPokemon = () => {
           </Listbox>
         </div>
         <div className="mt-4 pb-10 mx-auto max-w-md px-4 grid gap-4 lg:gap-12 sm:max-w-4xl sm:px-6 lg:px-8 sm:grid-cols-2  md:max-w-5xl md:grid-cols-2  xl:grid-cols-4 lg:max-w-full">
-          {!isFetching 
+          {!isFetching
             ? allPokemon.results?.map((item, index) => (
                 <div
                   className="flex flex-col items-start space-y-2"
@@ -318,7 +318,7 @@ const ListPokemon = () => {
                     </div>
                   </div>
                   <span className="px-2 text-slate-400 text-xs font-extrabold">
-                    {Math.floor(Math.random() * 60) + " "}minute ago
+                    {moment(item.created_at).fromNow()}
                   </span>
                 </div>
               ))
@@ -368,11 +368,9 @@ const ListPokemon = () => {
                   router.replace({
                     pathname: router.pathname,
                     query: { page: parseInt(pages) + 1 },
-                  })
-
+                  });
                 }
-              }
-              }
+              }}
             >
               <ArrowRightIcon className="w-5 h-5 text-white" />
             </div>

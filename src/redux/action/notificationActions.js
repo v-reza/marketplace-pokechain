@@ -2,7 +2,7 @@ import {
   notificationStart,
   notificationSuccess,
   notificationFailed,
-  notificationReset
+  notificationReset,
 } from "@/redux/reducer/notificationReducer";
 
 export const setNotification = async (dispatch, data) => {

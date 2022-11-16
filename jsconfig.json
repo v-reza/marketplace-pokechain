@@ -10,8 +10,8 @@
       "@/redux/*": ["src/redux/*"],
       "@/contexts/*": ["src/contexts/*"],
       "@/utils": ["src/utils/*"],
-      "@/middleware": ["src/middleware/*"],
-      "@/dist/*": ["src/dist/assets/*"],
+      "@/middleware/*": ["src/middleware/*"],
+      "@/dist/*": ["src/dist/assets/*"]
     }
   }
 }

@@ -6,13 +6,12 @@ import {
   SelectorIcon,
 } from "@heroicons/react/solid";
 import React, { Fragment, useEffect, useState } from "react";
+import { classNames, getPriceToToken } from "@/utils/constant";
 import {
-  classNames,
   getItemType,
   getPokemonElementType,
-  getPriceToToken,
   getTokenType,
-} from "@/utils/constant";
+} from "constant-pokechain";
 import axios from "axios";
 import { Tooltip } from "flowbite-react";
 import Image from "next/image";
@@ -192,7 +191,8 @@ const ListToken = (props) => {
                           />
                           <div className="mt-2 flex items-center space-x-2">
                             <span className="capitalize text-sm font-bold text-slate-300 ">
-                              Sell: {getPriceToToken(Math.floor(Math.random() * 500))}
+                              Sell:{" "}
+                              {getPriceToToken(Math.floor(Math.random() * 500))}
                             </span>
                           </div>
                         </div>

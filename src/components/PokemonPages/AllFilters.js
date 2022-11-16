@@ -7,7 +7,7 @@ import {
   ChevronUpIcon,
 } from "@heroicons/react/solid";
 import { classNames } from "@/utils/constant";
-import { getPokemonElementType } from "@/utils/constant";
+import { getPokemonElementType } from "constant-pokechain";
 import Image from "next/image";
 const AllFilters = () => {
   const filterElement = [

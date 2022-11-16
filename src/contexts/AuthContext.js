@@ -46,7 +46,6 @@ export const AuthContextProvider = ({ children }) => {
               refreshToken: state.refresh_token,
             },
           });
-
           const { accessToken } = response.data;
           localStorage.setItem("access_token", accessToken);
           const decodedUser = jwtDecode(accessToken);
@@ -55,6 +54,9 @@ export const AuthContextProvider = ({ children }) => {
           const decodedUser = jwtDecode(state.access_token);
           setDecodeUser(dispatchRedux, decodedUser);
         }
+        setCookieIsAuth("isAuth", true, {
+          path: "/",
+        });
         if (
           router.pathname !== "/auth/login" ||
           router.pathname !== "/auth/register"
@@ -73,10 +75,13 @@ export const AuthContextProvider = ({ children }) => {
         removeCookieIsAuth("isAuth", {
           path: "/auth/register",
         });
+        removeCookieIsAuth("isAuth", {
+          path: "/",
+        });
       }
     };
     saveState();
-  }, [state, state.access_token, state.refresh_token, router]);
+  }, [state, state?.access_token, state?.refresh_token, router]);
 
   return (
     <AuthContext.Provider value={{ ...state, dispatch }}>

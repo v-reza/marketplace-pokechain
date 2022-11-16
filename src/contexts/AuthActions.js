@@ -2,7 +2,29 @@ import { setNotification } from "@/redux/action/notificationActions";
 import { publicRequest } from "@/utils/axiosInstance";
 import jwtDecode from "jwt-decode";
 
-// fetch with accessToke
+export const updateJwtToken = async (
+  { dispatch, dispatchRedux },
+  accessToken,
+  axiosInstance
+) => {
+  try {
+    const { refresh_token } = jwtDecode(accessToken);
+    console.log("update accessToken", accessToken)
+    dispatch({
+      type: "UPDATE_JWT_TOKEN",
+      payload: {
+        access_token: accessToken,
+        refresh_token: refresh_token,
+      },
+    });
+    localStorage.setItem("access_token", accessToken);
+    localStorage.setItem("refresh_token", refresh_token);
+  } catch (error) {
+    dispatchRedux(
+      setNotification({ type: "error", message: "Failed to update token" })
+    );
+  }
+};
 
 export const login = async ({ dispatch, dispatchRedux }, data, cb) => {
   //cb = (callback)
@@ -25,6 +47,7 @@ export const login = async ({ dispatch, dispatchRedux }, data, cb) => {
       type: "LOGIN_SUCCESS",
       payload: {
         access_token: accessToken,
+        refresh_token,
       },
     });
     if (msg) {
@@ -78,8 +101,7 @@ export const register = async (dispatch, data, cb) => {
   }
 };
 
-export const logout = async ({ dispatch, dispatchRedux }, data) => {
-  console.log(data);
+export const logout = async ({ dispatch, dispatchRedux }, data, cb) => {
   //cb = (callback)
   try {
     const response = await publicRequest.delete("/auth/logout", {
@@ -89,6 +111,7 @@ export const logout = async ({ dispatch, dispatchRedux }, data) => {
     dispatch({ type: "LOGOUT" });
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
+    cb();
     if (msg) {
       setNotification(dispatchRedux, { message: msg, error: false });
     }

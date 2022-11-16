@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import {
+  ArchiveIcon,
   CogIcon,
   LogoutIcon,
   MenuAlt1Icon,
@@ -32,6 +33,7 @@ const Sidebar = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [largeSidebarOpen, setLargeSidebarOpen] = useState(true);
   const [openAuthModal, setOpenAuthModal] = useState(false);
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
   const { isAuthenticated } = useAuth();
   const [isAuth, setIsAuth] = useState(false);
   const { currentUser } = useUser();
@@ -39,13 +41,12 @@ const Sidebar = ({ children }) => {
   const { dispatch } = useAuth();
   const dispatchRedux = useDispatch();
   const axiosInstance = useAxios();
-  const refresh_token = currentUser?.refresh_token
-  const handleLogout = (e) => {
+  const refresh_token = currentUser?.refresh_token;
+  const handleLogout = async (e) => {
     e.preventDefault();
-    logout(
-      { dispatch, dispatchRedux },
-      refresh_token
-    );
+    await logout({ dispatch, dispatchRedux }, refresh_token, () => {
+      setIsLoggedOut(true);
+    });
   };
 
   const fetchUserAccessToken = (e) => {
@@ -56,6 +57,13 @@ const Sidebar = ({ children }) => {
   useEffect(() => {
     setIsAuth(isAuthenticated);
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (isLoggedOut) {
+      router.replace(router.asPath);
+      setIsLoggedOut(false);
+    }
+  }, [isLoggedOut]);
 
   return (
     <>
@@ -196,43 +204,8 @@ const Sidebar = ({ children }) => {
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 pb-3 flex-shrink-0">
                     <div className="px-4 flex-shrink-0 w-full h-max">
-                      <Link href="/auth/login">
-                        {isAuth ? (
-                          <div className="flex-shrink-0  flex  p-5 ml-4">
-                            <a
-                              href="#"
-                              className="flex-shrink-0 w-full group block"
-                            >
-                              <div className="flex">
-                                <div>
-                                  <img
-                                    className="inline-block h-9 w-9 rounded-full"
-                                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                    alt=""
-                                  />
-                                </div>
-                                {largeSidebarOpen && (
-                                  <div className="ml-3">
-                                    <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                                      {currentUser?.email}
-                                    </p>
-                                    <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
-                                      View profile
-                                    </p>
-                                  </div>
-                                )}
-                                <div className="ml-3">
-                                  <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                                    {currentUser?.email}
-                                  </p>
-                                  <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
-                                    View profile
-                                  </p>
-                                </div>
-                              </div>
-                            </a>
-                          </div>
-                        ) : (
+                      {!isAuth && (
+                        <Link href="/auth/login">
                           <div className="px-4 flex-shrink-0 w-full">
                             <div
                               className="cursor-pointer flex items-center space-x-2 justify-center py-2 px-4 w-full rounded-full border border-transparent text-base font-medium text-white shadow focus:outline-none"
@@ -253,8 +226,8 @@ const Sidebar = ({ children }) => {
                               )}
                             </div>
                           </div>
-                        )}
-                      </Link>
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </nav>
@@ -479,25 +452,26 @@ const Sidebar = ({ children }) => {
                     </Menu.Item>
                     <Menu.Item>
                       {({ active }) => (
-                        <a
-                          href="#"
-                          className={classNames(
-                            active
-                              ? "bg-slate-600/50 text-slate-300"
-                              : "text-white",
-                            !largeSidebarOpen &&
-                              "flex items-center justify-center",
-                            "block px-4 py-2 text-sm"
-                          )}
-                        >
-                          {!largeSidebarOpen ? (
-                            <Tooltip content="Settings" placement="top">
-                              <CogIcon className="w-6 h-6" />
-                            </Tooltip>
-                          ) : (
-                            <span>Settings</span>
-                          )}
-                        </a>
+                        <Link href="/backpack">
+                          <a
+                            className={classNames(
+                              active
+                                ? "bg-slate-600/50 text-slate-300"
+                                : "text-white",
+                              !largeSidebarOpen &&
+                                "flex items-center justify-center",
+                              "block px-4 py-2 text-sm hover:bg-slate-600/50"
+                            )}
+                          >
+                            {!largeSidebarOpen ? (
+                              <Tooltip content="Backpack" placement="top">
+                                <ArchiveIcon className="w-6 h-6 text-white" />
+                              </Tooltip>
+                            ) : (
+                              <span>Backpack</span>
+                            )}
+                          </a>
+                        </Link>
                       )}
                     </Menu.Item>
                   </div>
@@ -555,7 +529,7 @@ const Sidebar = ({ children }) => {
                 {isAuth && (
                   <Menu as="div" className="ml-3 relative">
                     <div>
-                      <Menu.Button className="max-w-xs bg-white rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 lg:p-2 lg:rounded-md lg:hover:bg-gray-50">
+                      <Menu.Button className="max-w-xs bg-white rounded-full flex items-center text-sm focus:outline-none  lg:p-2 lg:rounded-md lg:hover:bg-gray-50">
                         <img
                           className="h-8 w-8 rounded-full"
                           src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
@@ -580,44 +554,36 @@ const Sidebar = ({ children }) => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-gray-900 border border-slate-700 ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <Menu.Item>
                           {({ active }) => (
                             <a
                               href="#"
                               className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
+                                active
+                                  ? "bg-slate-600/50 text-slate-300"
+                                  : "text-white",
+                                "block px-4 py-2 text-sm"
                               )}
                             >
-                              Your Profile
+                              View Profile
                             </a>
                           )}
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                            <a
-                              onClick={fetchUserAccessToken}
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
-                              )}
-                            >
-                              Test feth user yang membutuhkan accestoken
-                            </a>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
-                              )}
-                            >
-                              Settings
-                            </a>
+                            <Link href="/backpack">
+                              <a
+                                className={classNames(
+                                  active
+                                    ? "bg-slate-600/50 text-slate-300"
+                                    : "text-white",
+                                  "block px-4 py-2 text-sm hover:bg-slate-600/50"
+                                )}
+                              >
+                                Backpack
+                              </a>
+                            </Link>
                           )}
                         </Menu.Item>
                         <Menu.Item>
@@ -625,8 +591,10 @@ const Sidebar = ({ children }) => {
                             <div onClick={handleLogout}>
                               <a
                                 className={classNames(
-                                  active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700"
+                                  active
+                                    ? "bg-slate-600/50 text-slate-300"
+                                    : "text-white",
+                                  "block px-4 py-2 text-sm"
                                 )}
                               >
                                 Logout

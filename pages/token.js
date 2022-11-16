@@ -17,7 +17,7 @@ const TokenPages = () => {
         <div className="relative overflow-hidden">
           <main>
             <Breadcumb />
-            <ListToken/>
+            <ListToken />
           </main>
         </div>
       </div>

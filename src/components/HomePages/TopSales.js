@@ -6,11 +6,8 @@ import Image from "next/image";
 import { Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
-import {
-  classNames,
-  getPokemonElementType,
-  getPriceToToken,
-} from "@/utils/constant";
+import { classNames, getPriceToToken } from "@/utils/constant";
+import { getPokemonElementType } from "constant-pokechain";
 import axios from "axios";
 import { Tooltip } from "flowbite-react";
 

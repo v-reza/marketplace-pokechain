@@ -3,7 +3,6 @@ import bgToken from "@/dist/token.png";
 import Image from "next/image";
 import { useState } from "react";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/solid";
-import { getPokemonElementType, getPriceToToken } from "@/utils/constant";
 import axios from "axios";
 import { Tooltip } from "flowbite-react";
 import { motion } from "framer-motion";

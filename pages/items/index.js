@@ -53,8 +53,8 @@ const ItemPages = () => {
         <div className="relative overflow-hidden">
           <main>
             <Breadcumb />
-            <AllFilterItems/>
-            <ListItems items={item}/>
+            <AllFilterItems />
+            <ListItems items={item} />
           </main>
         </div>
       </div>

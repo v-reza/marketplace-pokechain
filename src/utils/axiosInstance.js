@@ -22,7 +22,8 @@ export const useAxios = () => {
         },
       });
       const { accessToken } = response.data;
-      localStorage.setItem("access_token", JSON.stringify(accessToken));
+
+      localStorage.setItem("access_token", accessToken);
       req.headers.Authorization = `Bearer ${accessToken}`;
     }
     return req;

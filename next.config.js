@@ -11,11 +11,11 @@ const nextConfig = {
     CI: false,
     GENERATE_SOURCEMAP: false,
     currency: "USD",
-    formatCurrency: "$ "
+    formatCurrency: "$ ",
   },
   images: {
-    domains: ["raw.githubusercontent.com"]
-  }
-}
+    domains: ["raw.githubusercontent.com", "api.pokechain.games"],
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

@@ -50,19 +50,28 @@ a {
   display: none;
 }
 
+#scroll_none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;  
+}
+
+#scroll_none::-webkit-scrollbar {
+  display: none;
+}
+
 #btn_login {
   background: linear-gradient(104.04deg, #ffb444, #eb6f3a);
 }
 #btn_login:hover {
-  background: #eb6f3a
+  background: #eb6f3a;
 }
-#toogle_toast button{
+#toogle_toast button {
   background: rgb(31 41 55);
-  margin-top:3px;
+  margin-top: 3px;
 }
-#toogle_toast button:hover{
+#toogle_toast button:hover {
   color: white;
-  margin-top:3px;
+  margin-top: 3px;
 }
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
@@ -72,7 +81,7 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-@media(max-width: 425px) and (min-width: 375px) {
+@media (max-width: 425px) and (min-width: 375px) {
   .gridBundlesContainer {
     margin-left: 3rem;
   }
@@ -81,7 +90,7 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 }
 
-@media(max-width: 425px) and (min-width: 400px) {
+@media (max-width: 425px) and (min-width: 400px) {
   .gridBundlesContainer {
     margin-left: 2rem;
   }
@@ -90,7 +99,7 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 }
 
-@media(max-width: 375px) and (min-width: 320px) {
+@media (max-width: 375px) and (min-width: 320px) {
   .gridBundlesContainer {
     margin-left: 2.5rem;
   }

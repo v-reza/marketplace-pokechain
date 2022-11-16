@@ -1,4 +1,5 @@
-import { getPriceToToken, getTokenType } from "@/utils/constant";
+import { getPriceToToken } from "@/utils/constant";
+import { getTokenType } from "constant-pokechain";
 import Image from "next/image";
 import React from "react";
 

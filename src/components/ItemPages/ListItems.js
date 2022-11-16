@@ -6,12 +6,8 @@ import {
   SelectorIcon,
 } from "@heroicons/react/solid";
 import React, { Fragment, useEffect, useState } from "react";
-import {
-  classNames,
-  getItemType,
-  getPokemonElementType,
-  getPriceToToken,
-} from "@/utils/constant";
+import { classNames, getPriceToToken } from "@/utils/constant";
+import { getItemType, getPokemonElementType } from "constant-pokechain";
 import axios from "axios";
 import { Tooltip } from "flowbite-react";
 import Image from "next/image";
@@ -19,6 +15,8 @@ import bgToken from "@/dist/token.png";
 import { useRouter } from "next/router";
 import { useQuery, useQueryClient } from "react-query";
 import { getAllItems } from "./schema/query";
+import moment from "moment";
+import Link from "next/link";
 
 const ListItems = (props) => {
   const { items } = props;
@@ -31,17 +29,7 @@ const ListItems = (props) => {
   ];
   const router = useRouter();
   const [pages, setPages] = useState(1);
-  const {
-    isLoading,
-    isError,
-    error,
-    data: allItems,
-    isFetching,
-    isRefetching,
-    isFetched,
-    isPreviousData,
-    refetch,
-  } = useQuery({
+  const { data: allItems, isFetching } = useQuery({
     queryKey: ["allItems", pages],
     queryFn: () => getAllItems(pages),
     keepPreviousData: true,
@@ -58,6 +46,25 @@ const ListItems = (props) => {
       });
     }
   }, [router.query.page, allItems?.totalPages]);
+
+  if (selected.id === 1) {
+    //lowest price
+    allItems?.results.sort((a, b) => a.price - b.price);
+  } else if (selected.id === 2) {
+    //highest price
+    allItems?.results.sort((a, b) => b.price - a.price);
+  } else if (selected.id === 3) {
+    //lowest id
+    allItems?.results.sort((a, b) => a.increment_id - b.increment_id);
+  } else if (selected.id === 4) {
+    //highest id
+    allItems?.results.sort((a, b) => b.increment_id - a.increment_id);
+  } else if (selected.id === 5) {
+    //latest
+    allItems?.results.sort(
+      (a, b) => new Date(b.created_at) - new Date(a.created_at)
+    );
+  }
 
   return (
     <div>
@@ -139,111 +146,126 @@ const ListItems = (props) => {
         <div className="mt-4 pb-10 mx-auto max-w-md px-4 grid gap-4 lg:gap-12 sm:max-w-4xl sm:px-6 lg:px-8 sm:grid-cols-2  md:max-w-5xl md:grid-cols-2  xl:grid-cols-4 lg:max-w-full">
           {!isFetching
             ? allItems.results.map((item, index) => (
-                <div
-                  className="flex flex-col items-start space-y-2"
-                  key={index}
-                >
+                <Link key={index} href={`/items/${item.increment_id}`}>
                   <div
+                    className="flex flex-col items-start space-y-2"
                     key={index}
-                    className="shadow-lg hover:shadow-xl flex flex-col rounded-lg w-full bg-gray-700 border border-slate-600  hover:border-slate-500 cursor-pointer"
                   >
                     <div
-                      className={`h-56 w-full bg-opacity-25 rounded-t-lg shadow-lg `}
-                      style={{
-                        backgroundImage: `linear-gradient(180deg, rgba(175,219,27,0),${
-                          getItemType(item.name).rgba
-                        })`,
-                      }}
+                      key={index}
+                      className="shadow-lg hover:shadow-xl flex flex-col rounded-lg w-full bg-gray-700 border border-slate-600  hover:border-slate-500 cursor-pointer"
                     >
-                      <div className="flex items-center w-full">
-                        <div className="px-4 flex items-start justify-start py-2 ">
-                          <div className="flex flex-col">
-                            <div
-                              className={`flex items-center  bg-slate-800 rounded-md px-2 w-max py-1 space-x-1`}
-                            >
+                      <div
+                        className={`h-56 w-full bg-opacity-25 rounded-t-lg shadow-lg `}
+                        style={{
+                          backgroundImage: `linear-gradient(180deg, rgba(175,219,27,0),${
+                            getItemType(item.name).rgba
+                          })`,
+                        }}
+                      >
+                        <div className="flex items-center w-full">
+                          <div className="px-4 flex items-start justify-start py-2 ">
+                            <div className="flex flex-col">
                               <div
-                                key={index}
-                                className="text-sm font-extrabold text-white "
+                                className={`flex items-center  bg-slate-800 rounded-md px-2 w-max py-1 space-x-1`}
                               >
-                                <Tooltip
-                                  placement="top"
-                                  content={
-                                    <span className="capitalize">
-                                      {
-                                        getItemType(item.name).detail.rarity
-                                          .name
-                                      }
-                                    </span>
-                                  }
+                                <div
+                                  key={index}
+                                  className="text-sm font-extrabold text-white "
                                 >
-                                  {getItemType(item.name).detail.rarity.svg}
-                                </Tooltip>
-                              </div>
+                                  <Tooltip
+                                    placement="top"
+                                    content={
+                                      <span className="capitalize">
+                                        {
+                                          getItemType(item.name).detail.rarity
+                                            .name
+                                        }
+                                      </span>
+                                    }
+                                  >
+                                    <svg
+                                      viewBox="0 0 24 24"
+                                      width="16"
+                                      height="16"
+                                      style={{
+                                        color: getItemType(item.name).detail
+                                          .rarity.hex,
+                                      }}
+                                    >
+                                      <path
+                                        d="M9.5 9.5S11 2 12 2s2.5 7.5 2.5 7.5S21 11 21 12s-6.5 2.5-6.5 2.5S13 22 12 22s-2.5-7.5-2.5-7.5S3 13 3 12s6.5-2.5 6.5-2.5Z"
+                                        fill="currentColor"
+                                      ></path>
+                                    </svg>
+                                  </Tooltip>
+                                </div>
 
-                              <div
-                                className={`flex items-center  text-sm font-extrabold !ml-2 `}
-                                style={{
-                                  color: getItemType(item.name).detail.rarity
-                                    .hex,
-                                }}
-                              >
-                                {getItemType(item.name).detail.rarity.name}
+                                <div
+                                  className={`flex items-center  text-sm font-extrabold !ml-2 `}
+                                  style={{
+                                    color: getItemType(item.name).detail.rarity
+                                      .hex,
+                                  }}
+                                >
+                                  {getItemType(item.name).detail.rarity.name}
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="flex flex-col items-center justify-center">
                         <div className="flex flex-col items-center justify-center">
-                          <Image
-                            alt="item"
-                            src={getItemType(item.name).img}
-                            width={100}
-                            height={100}
-                            blurDataURL
-                            placeholder="blur"
-                            priority
-                          />
-                          <div className="mt-2 flex items-center space-x-2">
+                          <div className="flex flex-col items-center justify-center">
                             <Image
-                              alt="token"
-                              src={bgToken}
-                              width={30}
-                              height={30}
+                              alt="item"
+                              src={getItemType(item.name).img}
+                              width={100}
+                              height={100}
+                              blurDataURL
+                              placeholder="blur"
+                              priority
                             />
-                            <span className="capitalize text-sm font-bold text-slate-300 ">
-                              {getPriceToToken(Math.floor(Math.random() * 500))}
+                            <div className="mt-2 flex items-center space-x-2">
+                              <Image
+                                alt="token"
+                                src={bgToken}
+                                width={30}
+                                height={30}
+                              />
+                              <span className="capitalize text-sm font-bold text-slate-300 ">
+                                {getPriceToToken(item.price)}
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <span className="capitalize text-sm font-bold text-slate-300">
+                              ${item.price}
                             </span>
                           </div>
                         </div>
-                        <div>
-                          <span className="capitalize text-sm font-bold text-slate-300">
-                            ${Math.floor(Math.random() * 500)}
-                          </span>
-                        </div>
                       </div>
-                    </div>
-                    <div className="flex-1 bg-gray-700 rounded-b-lg p-6 flex flex-col justify-between">
-                      <div className="flex-1">
-                        <div className="flex flex-row justify-between">
-                          <div className="flex flex-col">
-                            <div className="flex items-center space-x-1 ">
-                              <span className="text-md font-medium text-white capitalize">
-                                {item.name.replace("-", " ")}
-                              </span>
-                              <span className="text-md font-medium text-white">
-                                #{Math.floor(Math.random() * 900000)}
-                              </span>
+                      <div className="flex-1 bg-gray-700 rounded-b-lg p-6 flex flex-col justify-between">
+                        <div className="flex-1">
+                          <div className="flex flex-row justify-between">
+                            <div className="flex flex-col">
+                              <div className="flex items-center space-x-1 ">
+                                <span className="text-md font-medium text-white capitalize">
+                                  {item.name.replace("-", " ")}
+                                </span>
+                                <span className="text-md font-medium text-white">
+                                  #{item.increment_id}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
+                    <span className="px-2 text-slate-400 text-xs font-extrabold">
+                      {moment(item.created_at).fromNow()}
+                    </span>
                   </div>
-                  <span className="px-2 text-slate-400 text-xs font-extrabold">
-                    {Math.floor(Math.random() * 60) + " "}minute ago
-                  </span>
-                </div>
+                </Link>
               ))
             : new Array(12).fill(0).map((_, index) => (
                 <div key={index}>
