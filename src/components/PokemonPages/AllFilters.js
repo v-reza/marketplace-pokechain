@@ -9,7 +9,7 @@ import {
 import { classNames } from "@/utils/constant";
 import { getPokemonElementType } from "constant-pokechain";
 import Image from "next/image";
-const AllFilters = () => {
+const AllFilters = ({selectedElement, setSelectedElement}) => {
   const filterElement = [
     {
       name: "normal",
@@ -92,7 +92,8 @@ const AllFilters = () => {
       active: false,
     },
   ];
-  const [selectedElement, setSelectedElement] = useState([]);
+
+
   const [useFilterElement, setUseFilterElement] = useState(true);
 
   return (
@@ -114,7 +115,7 @@ const AllFilters = () => {
               <div className="flex items-center">
                 <span>All Filters</span>
                 {useFilterElement && selectedElement.length > 0 && (
-                  <span className="ml-1">(1)</span>
+                  <span className="ml-1">({selectedElement.length})</span>
                 )}
               </div>
             </Menu.Button>
@@ -133,7 +134,9 @@ const AllFilters = () => {
               <div className="py-2 px-4">
                 <div className="flex items-center justify-between">
                   <span className="text-lg text-white font-medium">Filter</span>
-                  <div className="p-2 cursor-pointer flex items-center justify-center  rounded-md bg-rose-500 hover:bg-rose-600/50">
+                  <div className="p-2 cursor-pointer flex items-center justify-center  rounded-md bg-rose-500 hover:bg-rose-600/50" onClick={()=>{
+                    setSelectedElement([])
+                  }}>
                     <span className="text-white text-sm">Reset</span>
                   </div>
                 </div>
