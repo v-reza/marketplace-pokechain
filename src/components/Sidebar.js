@@ -29,13 +29,13 @@ const SidebarMainContent = ({ children }) => {
   return <>{children}</>;
 };
 
-const Sidebar = ({ children }) => {
+const Sidebar = ({ children, isAuth }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [largeSidebarOpen, setLargeSidebarOpen] = useState(true);
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const [isLoggedOut, setIsLoggedOut] = useState(false);
+  const [isAuthState, setIsAuthState] = useState(false);
   const { isAuthenticated } = useAuth();
-  const [isAuth, setIsAuth] = useState(false);
   const { currentUser } = useUser();
   const router = useRouter();
   const { dispatch } = useAuth();
@@ -53,18 +53,18 @@ const Sidebar = ({ children }) => {
     e.preventDefault();
     fetchUser(axiosInstance);
   };
-
+  
   useEffect(() => {
-    setIsAuth(isAuthenticated);
-  }, [isAuthenticated]);
+    setIsAuthState(isAuthenticated)
+  }, [isAuthenticated])
 
   useEffect(() => {
     if (isLoggedOut) {
       router.replace(router.asPath);
       setIsLoggedOut(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedOut]);
-
   return (
     <>
       <div className="h-screen min-h-full">
@@ -204,7 +204,7 @@ const Sidebar = ({ children }) => {
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 pb-3 flex-shrink-0">
                     <div className="px-4 flex-shrink-0 w-full h-max">
-                      {!isAuth && (
+                      {!isAuth && !isAuthState && (
                         <Link href="/auth/login">
                           <div className="px-4 flex-shrink-0 w-full">
                             <div
@@ -357,7 +357,7 @@ const Sidebar = ({ children }) => {
             </nav>
           </div>
 
-          {!isAuth ? (
+          {!isAuth && !isAuthState ? (
             <div
               className="flex-shrink-0 flex pb-5 bg-gray-900"
               onClick={() => setOpenAuthModal(true)}
@@ -526,7 +526,7 @@ const Sidebar = ({ children }) => {
             <div className="flex-1 px-4 flex justify-end sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8 bg-gray-900 border-b border-slate-600">
               <div className="ml-4 flex items-center md:ml-6">
                 {/* Profile dropdown */}
-                {isAuth && (
+                {isAuth && isAuthState && (
                   <Menu as="div" className="ml-3 relative">
                     <div>
                       <Menu.Button className="max-w-xs bg-white rounded-full flex items-center text-sm focus:outline-none  lg:p-2 lg:rounded-md lg:hover:bg-gray-50">

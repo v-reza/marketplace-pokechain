@@ -1,6 +1,6 @@
 const getSession = async (ctx) => {
   const { req, res } = ctx;
-  const isAuth = req.cookies?.isAuth;
+  const isAuth = req?.cookies?.isAuth;
 
   if (Boolean(!isAuth) || !isAuth) {
     return {

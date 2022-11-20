@@ -1,45 +1,15 @@
 import Breadcumb from "@/components/Breadcumb";
 import AllFilterItems from "@/components/ItemPages/AllFilters";
 import ListItems from "@/components/ItemPages/ListItems";
+import { getAllItems } from "@/components/ItemPages/schema/query";
 import Head from "next/head";
-import React from "react";
+import React, { useState } from "react";
+import { dehydrate, QueryClient } from "react-query";
 
 const ItemPages = () => {
-  const item = [
-    {
-      type: "awakening",
-    },
-    {
-      type: "full-heal",
-    },
-    {
-      type: "master-ball",
-    },
-    {
-      type: "max-revive",
-    },
-    {
-      type: "medium-ball",
-    },
-    {
-      type: "potion",
-    },
-    {
-      type: "protein",
-    },
-    {
-      type: "revive",
-    },
-    {
-      type: "ultra-ball",
-    },
-    {
-      type: "x-attack",
-    },
-    {
-      type: "x-defense",
-    },
-  ];
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedRarity, setSelectedRarity] = useState([]);
+
   return (
     <>
       <div className="h-screen bg-gray-900 min-h-full flex-1">
@@ -53,13 +23,41 @@ const ItemPages = () => {
         <div className="relative overflow-hidden">
           <main>
             <Breadcumb />
-            <AllFilterItems />
-            <ListItems items={item} />
+            <AllFilterItems
+              selectedItems={selectedItems}
+              setSelectedItems={setSelectedItems}
+              selectedRarity={selectedRarity}
+              setSelectedRarity={setSelectedRarity}
+            />
+            <ListItems
+              selectedItems={selectedItems}
+              selectedRarity={selectedRarity}
+            />
           </main>
         </div>
       </div>
     </>
   );
 };
+
+// export const getStaticProps = async () => {
+//   const queryClient = new QueryClient();
+//   await queryClient.prefetchQuery({
+//     queryKey: [
+//       "allItems",
+//       { pages: "1" },
+//       { sort: "lowest_price" },
+//       { filterItems: [] },
+//       { filterRarity: [] },
+//     ],
+//     queryFn: () => getAllItems("1", "lowest_price", [], []),
+    
+//   });
+//   return {
+//     props: {
+//       dehydratedState: dehydrate(queryClient),
+//     },
+//   };
+// };
 
 export default ItemPages;

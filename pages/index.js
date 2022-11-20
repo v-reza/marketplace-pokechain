@@ -13,9 +13,6 @@ import {
 } from "@/components/HomePages/schema/query";
 
 export default function IndexPages() {
-  // const { currentUser } = useUser();
-  // const { accessToken } = useSelector(state => state.auth)
-  // console.log("accessToken => ", accessToken)
   return (
     <>
       <div className="h-screen bg-gray-900 min-h-full flex-1">

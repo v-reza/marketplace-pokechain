@@ -6,6 +6,9 @@ module.exports = {
     "node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
+    fontFamily: {
+      body: ["Work Sans", "Changa One"],
+    },
     extend: {},
   },
   plugins: [require("flowbite/plugin")],
