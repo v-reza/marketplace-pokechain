@@ -2,7 +2,7 @@ import useAuth from "@/hooks/useAuth";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 
-const baseURL = "http://localhost:5000/api/v1/";
+const baseURL = process.env.apiBaseUrl + process.env.versionApi;
 
 export const useAxios = () => {
   const { access_token, dispatch } = useAuth();

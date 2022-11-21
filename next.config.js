@@ -13,7 +13,9 @@ const nextConfig = {
     currency: "USD",
     formatCurrency: "$ ",
     MIDTRANS_CLIENT_KEY: "SB-Mid-client-wkRq0wPRcvhL4waI",
-    MIDTRANS_SERVER_KEY: "SB-Mid-server-d6roLynf_XGAfT_TGtTa8uBM"
+    MIDTRANS_SERVER_KEY: "SB-Mid-server-d6roLynf_XGAfT_TGtTa8uBM",
+    apiBaseUrl: "https://api.pokechain.games/api/",
+    versionApi: "v1"
   },
   images: {
     domains: ["raw.githubusercontent.com", "api.pokechain.games"],
