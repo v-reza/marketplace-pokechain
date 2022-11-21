@@ -25,7 +25,7 @@ export default function Register() {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    register(dispatch,form, ({ error, loading, message }) => {
+    register(dispatch, form, ({ error, loading, message }) => {
       setError(error);
       setIsLoading(loading);
       setIsMessage(message);

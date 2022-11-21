@@ -7,6 +7,7 @@ import { AuthContext } from "@/contexts/AuthContext";
 import { useDispatch } from "react-redux";
 import { login } from "@/contexts/AuthActions";
 import { Spinner } from "flowbite-react";
+import { useRouter } from "next/router";
 
 export default function LoginModal({ open, setOpen }) {
   const cancelButtonRef = useRef(null);
@@ -19,9 +20,9 @@ export default function LoginModal({ open, setOpen }) {
   const [message, setIsMessage] = useState(null);
   const { dispatch } = useContext(AuthContext);
   const dispatchRedux = useDispatch();
+  const router = useRouter();
 
   const handleLogin = async (e) => {
-    console.log('sa')
     e.preventDefault();
     await login(
       { dispatch, dispatchRedux },
@@ -31,7 +32,7 @@ export default function LoginModal({ open, setOpen }) {
         setIsLoading(loading);
         setIsMessage(message);
         if (error == false) {
-          setOpen(false)
+          setOpen(false);
         }
       }
     );
@@ -43,6 +44,7 @@ export default function LoginModal({ open, setOpen }) {
         userOrEmail: "",
         password: "",
       });
+      router.replace(router.asPath);
     }
   }, [error]);
 

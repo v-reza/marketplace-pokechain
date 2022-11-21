@@ -12,12 +12,14 @@ const nextConfig = {
     GENERATE_SOURCEMAP: false,
     currency: "USD",
     formatCurrency: "$ ",
+    MIDTRANS_CLIENT_KEY: "SB-Mid-client-wkRq0wPRcvhL4waI",
+    MIDTRANS_SERVER_KEY: "SB-Mid-server-d6roLynf_XGAfT_TGtTa8uBM",
     apiBaseUrl: "https://api.pokechain.games/api/",
     versionApi: "v1"
   },
   images: {
-    domains: ["raw.githubusercontent.com"]
-  }
-}
+    domains: ["raw.githubusercontent.com", "api.pokechain.games"],
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

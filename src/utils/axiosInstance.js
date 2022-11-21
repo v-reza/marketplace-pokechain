@@ -5,7 +5,7 @@ import jwtDecode from "jwt-decode";
 const baseURL = process.env.apiBaseUrl + process.env.versionApi;
 
 export const useAxios = () => {
-  const { access_token } = useAuth();
+  const { access_token, dispatch } = useAuth();
 
   const axiosInstance = axios.create({
     baseURL,
@@ -16,14 +16,21 @@ export const useAxios = () => {
   axiosInstance.interceptors.request.use(async (req) => {
     const { exp, refresh_token } = jwtDecode(access_token);
     if (exp * 1000 < new Date().getTime()) {
-      const response = await publicRequest.get("/auth/token", {
-        params: {
-          refreshToken: refresh_token,
-        },
-      });
-      const { accessToken } = response.data;
-      localStorage.setItem("access_token", JSON.stringify(accessToken));
-      req.headers.Authorization = `Bearer ${accessToken}`;
+      try {
+        const response = await publicRequest.get("/auth/token", {
+          params: {
+            refreshToken: refresh_token,
+          },
+        });
+        const { accessToken } = response.data;
+
+        localStorage.setItem("access_token", accessToken);
+        req.headers.Authorization = `Bearer ${accessToken}`;
+      } catch (error) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        dispatch({ type: "LOGOUT" });
+      }
     }
     return req;
   });

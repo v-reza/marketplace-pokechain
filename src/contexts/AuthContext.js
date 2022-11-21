@@ -41,42 +41,37 @@ export const AuthContextProvider = ({ children }) => {
         const checkExpired =
           expired * 1000 < new Date().getTime() ? true : false;
         if (checkExpired) {
-          const response = await publicRequest.get("/auth/token", {
-            params: {
-              refreshToken: state.refresh_token,
-            },
-          });
-
-          const { accessToken } = response.data;
-          localStorage.setItem("access_token", accessToken);
-          const decodedUser = jwtDecode(accessToken);
-          setDecodeUser(dispatchRedux, decodedUser);
+          try {
+            const response = await publicRequest.get("/auth/token", {
+              params: {
+                refreshToken: state.refresh_token,
+              },
+            });
+            const { accessToken } = response.data;
+            localStorage.setItem("access_token", accessToken);
+            const decodedUser = jwtDecode(accessToken);
+            setDecodeUser(dispatchRedux, decodedUser);
+          } catch (error) {
+            removeCookieIsAuth("isAuth");
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            dispatch({ type: "LOGOUT" });
+          }
         } else {
           const decodedUser = jwtDecode(state.access_token);
           setDecodeUser(dispatchRedux, decodedUser);
         }
-        if (
-          router.pathname !== "/auth/login" ||
-          router.pathname !== "/auth/register"
-        ) {
-          setCookieIsAuth("isAuth", true, {
-            path: "/auth/login",
-          });
-          setCookieIsAuth("isAuth", true, {
-            path: "/auth/register",
-          });
-        }
+        setCookieIsAuth("isAuth", true, {
+          path: "/",
+        });
       } else {
         removeCookieIsAuth("isAuth", {
-          path: "/auth/login",
-        });
-        removeCookieIsAuth("isAuth", {
-          path: "/auth/register",
+          path: "/",
         });
       }
     };
     saveState();
-  }, [state, state.access_token, state.refresh_token, router]);
+  }, [state, state?.access_token, state?.refresh_token, router]);
 
   return (
     <AuthContext.Provider value={{ ...state, dispatch }}>

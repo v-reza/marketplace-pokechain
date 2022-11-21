@@ -1,4 +1,5 @@
-import { getItemType, getPriceToToken } from "@/utils/constant";
+import { getPriceToToken } from "@/utils/constant";
+import { getItemType } from "constant-pokechain";
 import { Tooltip } from "flowbite-react";
 import Image from "next/image";
 import React from "react";

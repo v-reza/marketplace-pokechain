@@ -1,8 +1,5 @@
-import {
-  getItemType,
-  getPokemonElementType,
-  getPriceToToken,
-} from "@/utils/constant";
+import { getPriceToToken } from "@/utils/constant";
+import { getItemType, getPokemonElementType } from "constant-pokechain";
 import { Tooltip } from "flowbite-react";
 import Image from "next/image";
 import React from "react";
@@ -34,7 +31,19 @@ const Items = ({ item }) => {
                       </span>
                     }
                   >
-                    {getItemType(item.name).detail.rarity.svg}
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="16"
+                      height="16"
+                      style={{
+                        color: getItemType(item.name).detail.rarity.hex,
+                      }}
+                    >
+                      <path
+                        d="M9.5 9.5S11 2 12 2s2.5 7.5 2.5 7.5S21 11 21 12s-6.5 2.5-6.5 2.5S13 22 12 22s-2.5-7.5-2.5-7.5S3 13 3 12s6.5-2.5 6.5-2.5Z"
+                        fill="currentColor"
+                      ></path>
+                    </svg>
                   </Tooltip>
                 </div>
                 <div

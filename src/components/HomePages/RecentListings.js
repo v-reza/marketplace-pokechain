@@ -11,12 +11,6 @@ import {
   CheckIcon,
   SelectorIcon,
 } from "@heroicons/react/solid";
-import {
-  classNames,
-  getPokemonElementType,
-  getPriceToToken,
-} from "@/utils/constant";
-
 import { motion } from "framer-motion";
 import axios from "axios";
 import { Tooltip } from "flowbite-react";

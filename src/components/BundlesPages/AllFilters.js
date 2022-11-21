@@ -6,8 +6,12 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from "@heroicons/react/solid";
-import { classNames, getItemType, getRarity } from "@/utils/constant";
-import { getPokemonElementType } from "@/utils/constant";
+import { classNames } from "@/utils/constant";
+import {
+  getPokemonElementType,
+  getItemType,
+  getRarity,
+} from "constant-pokechain";
 import Image from "next/image";
 const AllFilterBundles = () => {
   const filterItems = [

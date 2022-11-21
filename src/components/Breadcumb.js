@@ -7,6 +7,7 @@ const Breadcumb = () => {
   const [onHover, setOnHover] = useState(false);
   const router = useRouter();
   const pathname = router.pathname.split("/")[1];
+
   return (
     <div>
       <div className="px-8 py-7 border-b border-slate-800">
@@ -40,11 +41,21 @@ const Breadcumb = () => {
             </div>
           </Link>
           <ChevronRightIcon className="h-4 w-4 text-slate-500" />
-          <Link href={router.pathname}>
+          <Link href={`/${pathname}`}>
             <span className="text-white text-sm font-bold cursor-pointer capitalize">
               {pathname}
             </span>
           </Link>
+          {router.query.id && (
+            <>
+              <ChevronRightIcon className="h-4 w-4 text-slate-500" />
+              <Link href={`${router.asPath}`}>
+                <span className="text-white text-sm font-bold cursor-pointer capitalize">
+                  #{router.query.id}
+                </span>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </div>

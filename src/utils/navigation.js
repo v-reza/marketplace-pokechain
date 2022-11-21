@@ -1,7 +1,7 @@
-import pikachu from "@/dist/pikachu.png"
-import pokeball from "@/dist/pokeball.png"
-import tabBundle from "@/dist/tab-bundle.png"
-import token from "@/dist/token.png"
+import pikachu from "@/dist/pikachu.png";
+import pokeball from "@/dist/pokeball.png";
+import tabBundle from "@/dist/tab-bundle.png";
+import token from "@/dist/token.png";
 const navigation = [
   {
     name: "Pokemons",

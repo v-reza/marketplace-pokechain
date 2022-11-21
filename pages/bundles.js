@@ -45,7 +45,7 @@ const BundlesPages = () => {
         <div className="relative overflow-hidden">
           <main>
             <Breadcumb />
-            <AllFilterBundles/>
+            <AllFilterBundles />
             <ListBundles items={item} />
           </main>
         </div>

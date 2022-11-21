@@ -6,10 +6,21 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from "@heroicons/react/solid";
-import { classNames, getItemType, getRarity } from "@/utils/constant";
-import { getPokemonElementType } from "@/utils/constant";
+import { classNames } from "@/utils/constant";
+import {
+  getPokemonElementType,
+  getItemType,
+  getRarity,
+} from "constant-pokechain";
 import Image from "next/image";
-const AllFilterItems = () => {
+import { useQueryClient } from "react-query";
+const AllFilterItems = ({
+  selectedItems,
+  setSelectedItems,
+  selectedRarity,
+  setSelectedRarity,
+}) => {
+  const queryClient = useQueryClient();
   const filterItems = [
     {
       name: "awakening",
@@ -74,8 +85,6 @@ const AllFilterItems = () => {
       active: false,
     },
   ];
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [selectedRarity, setSelectedRarity] = useState([]);
 
   return (
     <div>
@@ -84,7 +93,7 @@ const AllFilterItems = () => {
           <div>
             <Menu.Button
               className={`inline-flex justify-center w-full rounded-md border ${
-                selectedItems.length > 0
+                selectedItems.length > 0 || selectedRarity.length > 0
                   ? "border-indigo-500 text-indigo-500"
                   : "border-gray-700 text-white"
               }  shadow-sm px-4 py-2 bg-black text-sm  font-medium hover:bg-gray-700/50 focus:outline-none`}
@@ -119,7 +128,13 @@ const AllFilterItems = () => {
               <div className="py-2 px-4">
                 <div className="flex items-center justify-between">
                   <span className="text-lg text-white font-medium">Filter</span>
-                  <span className="text-rose-500 hover:text-rose-600  text-md cursor-pointer">
+                  <span
+                    className="text-rose-500 hover:text-rose-600  text-md cursor-pointer"
+                    onClick={() => {
+                      setSelectedItems([]);
+                      setSelectedRarity([]);
+                    }}
+                  >
                     Clear Filter
                   </span>
                 </div>
@@ -223,7 +238,17 @@ const AllFilterItems = () => {
                               key={index}
                               className="flex items-center space-x-2 text-sm font-extrabold text-white"
                             >
-                              {itemType.svg}
+                              <svg
+                                viewBox="0 0 24 24"
+                                width="16"
+                                height="16"
+                                style={{ color: itemType.hex }}
+                              >
+                                <path
+                                  d="M9.5 9.5S11 2 12 2s2.5 7.5 2.5 7.5S21 11 21 12s-6.5 2.5-6.5 2.5S13 22 12 22s-2.5-7.5-2.5-7.5S3 13 3 12s6.5-2.5 6.5-2.5Z"
+                                  fill="currentColor"
+                                ></path>
+                              </svg>
                               <span
                                 className="text-md font-bold capitalize"
                                 style={{ color: itemType.hex }}

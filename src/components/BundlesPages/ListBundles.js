@@ -6,11 +6,8 @@ import {
   SelectorIcon,
 } from "@heroicons/react/solid";
 import React, { Fragment, useEffect, useState } from "react";
-import {
-  classNames,
-  getItemType,
-  getPriceToToken,
-} from "@/utils/constant";
+import { classNames, getPriceToToken } from "@/utils/constant";
+import { getItemType, getRarity } from "constant-pokechain";
 import axios from "axios";
 import { Tooltip } from "flowbite-react";
 import Image from "next/image";
