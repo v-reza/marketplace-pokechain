@@ -246,8 +246,8 @@ const ListPokemon = () => {
                         <div className="flex flex-row justify-between">
                           <div className="flex flex-col">
                             <div className="flex items-center space-x-1 ">
-                              <span className="text-md font-medium text-white">
-                                Pokemon
+                              <span className="text-md font-medium text-white capitalize">
+                                {item.name}
                               </span>
                               <span className="text-md font-medium text-white">
                                 #{item.increment_id}

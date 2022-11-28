@@ -43,8 +43,7 @@ const DetailItemPages = ({ item, isAuth }) => {
                 </span>
               </div>
               {!item.buyer_id &&
-                (!isAuth ||
-                item.marketplace.seller.user_id === currentUser?.userId ? (
+                (!isAuth  ? (
                   <Tooltip
                     placement="top"
                     content={

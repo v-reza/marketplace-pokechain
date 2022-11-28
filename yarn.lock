@@ -1086,9 +1086,9 @@ concat-map@0.0.1:
   integrity sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==
 
 constant-pokechain@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/constant-pokechain/-/constant-pokechain-1.0.0.tgz#54367b5448d5e04b3cc7059657f40d7fd1ed92a9"
-  integrity sha512-iQNBCF3NxK1kvW+btSkY4QO/S3/1SoU1t1obRnZpgJDshMb3MDsuiQXPo5Cra3WebMOpYLf3Jbig2UhQ2xVuOg==
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/constant-pokechain/-/constant-pokechain-1.0.1.tgz#b99a5e2752d15cb34a995e6cad4d0f3e3721ec96"
+  integrity sha512-+qgJbUFZdefRt3F+stUhAgaNPdezHgdC7KQuBAk1RSKfbikBmVj2q5zyXIuzfy1lNFChhhdyGKCj1XD5nR6vKA==
 
 conventional-commit-types@^3.0.0:
   version "3.0.0"

@@ -11,8 +11,17 @@ import {
   getRecentListings,
   getRecentSales,
 } from "@/components/HomePages/schema/query";
+import useSocket from "@/hooks/useSocket";
 
 export default function IndexPages() {
+  // const { socket } = useSocket()
+
+  // useEffect(() => {
+  //   socket?.on("getUsers", (data) => {
+  //     console.log(data)
+  //   })
+
+  // }, [socket])
   return (
     <>
       <div className="h-screen bg-gray-900 min-h-full flex-1">
