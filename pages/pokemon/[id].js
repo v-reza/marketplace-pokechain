@@ -22,7 +22,7 @@ const DetailPokemon = ({isAuth}) => {
       <div className="relative overflow-hidden">
         <main>
           <Breadcumb />
-          <DetailPokemonPages  item={detailPokemonPages.results} isAuth={isAuth}/>
+          <DetailPokemonPages  item={detailPokemonPages?.results} isAuth={isAuth}/>
         </main>
       </div>
     </div>
