@@ -26,7 +26,6 @@ const DetailPokemonPages = ({ item, isAuth }) => {
       image: health,
       title: "Health",
     },
-    
   ];
 
   const TypeElement = ({ type }) => {
@@ -91,7 +90,7 @@ const DetailPokemonPages = ({ item, isAuth }) => {
     <div className={`max-w-full mt-10 my-10 ${isOpen ? "mx-8" : "mx-12"}`}>
       <div className="flex flex-col lg:flex-row mt-2 justify-center">
         <div className="w-full lg:basis-1/2">
-        <div className="flex flex-col space-y-6 lg:space-y-0 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col space-y-6 lg:space-y-0 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center space-x-2">
               <h2 className="text-2xl font-extrabold text-white capitalize">
                 {item.pokemonById.name.replace("-", " ")}
@@ -100,7 +99,7 @@ const DetailPokemonPages = ({ item, isAuth }) => {
                 #{item.pokemonById.increment_id}
               </span>
             </div>
-            
+
             <div className="lg:hidden flex flex-row items-center justify-between space-x-12">
               <div className="flex flex-col">
                 <div className="flex items-center space-x-2">
@@ -145,67 +144,63 @@ const DetailPokemonPages = ({ item, isAuth }) => {
                 </div>
               )}
             </div>
-            
           </div>
           <div className="px-10 py-10 flex items-center  w-96">
-              <div>
-                <Image
-                  src={item.pokemonById.front_default}
-                  alt="pokemon"
-                  width={300}
-                  height={300}
-                  blurDataURL
-                  placeholder="blur"
-                />
-              </div>
+            <div>
+              <Image
+                src={item.pokemonById.front_default}
+                alt="pokemon"
+                width={300}
+                height={300}
+                blurDataURL
+                placeholder="blur"
+              />
             </div>
+          </div>
         </div>
         <div className="basis-2/3">
-            
-        <div className="hidden lg:flex lg:flex-row lg:items-center lg:justify-end space-x-5 py-4">
-              <div className="flex flex-col">
-                <div className="flex items-center space-x-2">
-                  <Image src={token} width={30} height={30} alt="token" />
-                  <span className="text-white font-bold text-md">
-                    {getPriceToToken(item.pokemonById.price)}
-                  </span>
-                </div>
-                <span className="text-slate-400 font-medium text-md">
-                  ${item.pokemonById.price}
+          <div className="hidden lg:flex lg:flex-row lg:items-center lg:justify-end space-x-5 py-4">
+            <div className="flex flex-col">
+              <div className="flex items-center space-x-2">
+                <Image src={token} width={30} height={30} alt="token" />
+                <span className="text-white font-bold text-md">
+                  {getPriceToToken(item.pokemonById.price)}
                 </span>
               </div>
-              {!isAuth ? (
-                <Tooltip
-                  placement="top"
-                  content={
-                    <span className="text-white text-sm font-bold">
-                      Please login to buy this item
-                    </span>
-                  }
-                >
-                  <div className="px-4 py-2 rounded-lg bg-gray-700/50 hover:bg-gray-800/50 cursor-not-allowed">
-                    <div className="flex items-center space-x-2">
-                      <Image src={logoBuy} width={18} height={20} alt="logo" />
-                      <span className="text-slate-600 text-sm font-bold">
-                        Buy now
-                      </span>
-                    </div>
-                  </div>
-                </Tooltip>
-              ) : (
-                <div
-                  className="px-4 py-2 rounded-lg bg-indigo-700 hover:bg-indigo-800 cursor-pointer"
-                  // onClick={() => setOpenModalPayment(true)}
-                >
+              <span className="text-slate-400 font-medium text-md">
+                ${item.pokemonById.price}
+              </span>
+            </div>
+            {!isAuth ? (
+              <Tooltip
+                placement="top"
+                content={
+                  <span className="text-white text-sm font-bold">
+                    Please login to buy this item
+                  </span>
+                }
+              >
+                <div className="px-4 py-2 rounded-lg bg-gray-700/50 hover:bg-gray-800/50 cursor-not-allowed">
                   <div className="flex items-center space-x-2">
                     <Image src={logoBuy} width={18} height={20} alt="logo" />
-                    <span className="text-white text-sm font-bold">
+                    <span className="text-slate-600 text-sm font-bold">
                       Buy now
                     </span>
                   </div>
                 </div>
-              )}
-            </div>
+              </Tooltip>
+            ) : (
+              <div
+                className="px-4 py-2 rounded-lg bg-indigo-700 hover:bg-indigo-800 cursor-pointer"
+                // onClick={() => setOpenModalPayment(true)}
+              >
+                <div className="flex items-center space-x-2">
+                  <Image src={logoBuy} width={18} height={20} alt="logo" />
+                  <span className="text-white text-sm font-bold">Buy now</span>
+                </div>
+              </div>
+            )}
+          </div>
           <div className="flex flex-col mb-10 rounded-xl px-10 py-10 min-h-screen bg-slate-800">
             <div className="flex flex-row ">
               <div className="flex flex-col ">
@@ -277,8 +272,11 @@ const DetailPokemonPages = ({ item, isAuth }) => {
                 BODY PARTS
               </div>
               <div className="flex flex-row flex-wrap px-2 ">
-                {bodyParts.map((data) => (
-                  <div className="basis-1/2 flex flex-row items-center space-x-4 text-white my-4">
+                {bodyParts.map((data, i) => (
+                  <div
+                    className="basis-1/2 flex flex-row items-center space-x-4 text-white my-4"
+                    key={i}
+                  >
                     <div>
                       <Image
                         src={data.image}
@@ -310,6 +308,7 @@ const DetailPokemonPages = ({ item, isAuth }) => {
                   item.pokemonWithEvolution.pokemon_evolutions.map(
                     (data, index) => (
                       <div
+                        key={index}
                         className={`w-full lg:w-64 h-56 bg-slate-600 mb-[70px] ${
                           index === 0 ? "" : "mt-10 "
                         } lg:mt-0 rounded-md lg:mx-5 d bg-opacity-25 rounded-t-lg shadow-lg flex flex-col`}
