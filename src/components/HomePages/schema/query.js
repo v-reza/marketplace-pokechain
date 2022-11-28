@@ -13,3 +13,10 @@ export const getRecentListings = async (type = "pokemon") => {
   );
   return response.data;
 };
+
+export const getOverallStats = async (selected) => {
+  const response = await publicRequest.get(
+    `/marketplace/overall-stats?selected=${selected}`
+  );
+  return response.data;
+};

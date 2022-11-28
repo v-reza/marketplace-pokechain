@@ -19,7 +19,7 @@ import moment from "moment";
 import Link from "next/link";
 import SkeletonCard from "../SkeletonCard";
 
-const ListPokemon = ({ selectedElement, setSelectedElement }) => {
+const ListPokemon = ({ filterElement,setFilterElement }) => {
   const queryClient = useQueryClient();
 
   const filter = [
@@ -31,7 +31,7 @@ const ListPokemon = ({ selectedElement, setSelectedElement }) => {
   ];
   const router = useRouter();
   const [pages, setPages] = useState(1);
-  const [selected, setSelected] = useState();
+  const [filterSelected, setFilterSelected] = useState(filter[0]);
   const {
     isLoading,
     isError,
@@ -43,8 +43,8 @@ const ListPokemon = ({ selectedElement, setSelectedElement }) => {
     isPreviousData,
     refetch,
   } = useQuery({
-    queryKey: ["allPokemon", pages, selected, selectedElement],
-    queryFn: () => getAllPokemon(pages, selected, selectedElement),
+    queryKey: ["allPokemon", pages, filterSelected.name.split(" ").join("_").toLowerCase(), filterElement.join(",")],
+    queryFn: () => getAllPokemon(pages,  filterSelected.name.split(" ").join("_").toLowerCase(), filterElement.join(",")),
     keepPreviousData: true,
   });
 
@@ -62,13 +62,13 @@ const ListPokemon = ({ selectedElement, setSelectedElement }) => {
           <span className="text-white font-bold text-lg">
             {!isLoading ? allPokemon.total : 0} Pokemon
           </span>
-          <Listbox value={selected} onChange={setSelected}>
+          <Listbox value={filterSelected} onChange={setFilterSelected}>
             {({ open }) => (
               <>
                 <div className="mt-1 relative">
                   <Listbox.Button className="bg-black text-white  relative w-full border border-gray-700 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-pointer hover:bg-gray-700/50 focus:outline-none  sm:text-sm">
                     <span className="block truncate">
-                      {selected?.name || "Choose"}
+                      {filterSelected?.name }
                     </span>
                     <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                       <SelectorIcon
@@ -86,12 +86,6 @@ const ListPokemon = ({ selectedElement, setSelectedElement }) => {
                     leaveTo="opacity-0"
                   >
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-gray-700 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                      <Listbox.Option
-                        key="default"
-                        className="cursor-default select-none relative py-2 pl-3 pr-9 text-white hover:bg-indigo-600"
-                        onClick={() => setSelected()}
-                        value="Reset"
-                      >Reset</Listbox.Option>
                       {filter.map((person) => (
                         <>
                           <Listbox.Option
@@ -106,18 +100,18 @@ const ListPokemon = ({ selectedElement, setSelectedElement }) => {
                             }
                             value={person}
                           >
-                            {({ selected, active }) => (
+                            {({ filterSelected, active }) => (
                               <>
                                 <span
                                   className={classNames(
-                                    selected ? "font-semibold" : "font-normal",
+                                    filterSelected ? "font-semibold" : "font-normal",
                                     "block truncate"
                                   )}
                                 >
                                   {person.name}
                                 </span>
 
-                                {selected ? (
+                                {filterSelected ? (
                                   <span
                                     className={classNames(
                                       active ? "text-white" : "text-indigo-600",
@@ -256,8 +250,8 @@ const ListPokemon = ({ selectedElement, setSelectedElement }) => {
                         <div className="flex flex-row justify-between">
                           <div className="flex flex-col">
                             <div className="flex items-center space-x-1 ">
-                              <span className="text-md font-medium text-white">
-                                Pokemon
+                              <span className="text-md font-medium text-white capitalize">
+                                {item.name}
                               </span>
                               <span className="text-md font-medium text-white">
                                 #{item.increment_id}

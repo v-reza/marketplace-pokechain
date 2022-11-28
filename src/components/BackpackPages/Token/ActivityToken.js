@@ -5,15 +5,30 @@ import { useQuery } from "react-query";
 import { getActivityToken } from "../schema/query";
 import bgToken from "@/dist/token.png";
 import useUser from "@/hooks/useUser";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/outline";
+import { useState } from "react";
 
 export default function ActivityToken() {
   const axiosInstance = useAxios();
   const { currentUser } = useUser();
+  const [isFilterDate, setIsFilterDate] = useState(false);
 
   const { data: activityToken, isLoading } = useQuery({
     queryKey: "activityToken",
     queryFn: () => getActivityToken(axiosInstance),
   });
+
+  if (isFilterDate) {
+    //sort asc
+    activityToken.sort((a, b) => {
+      return new Date(a.created_at) - new Date(b.created_at);
+    });
+  } else {
+    // sort desc
+    activityToken?.sort((a, b) => {
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+  }
 
   const RenderStatus = (status) => {
     if (status === "convert") {
@@ -51,7 +66,7 @@ export default function ActivityToken() {
         className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8 mt-2"
         id="scroll_none"
       >
-        <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+        <div className="py-2 align-middle inline-block min-w-full pb-16 overflow-hidden sm:px-6 lg:px-8">
           <div className="shadow shadow-gray-800 overflow-hidden border-b border-gray-600 rounded-md sm:rounded-lg">
             <table className="min-w-full divide-y divide-gray-800">
               <thead className="bg-gray-800">
@@ -88,9 +103,15 @@ export default function ActivityToken() {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
+                    className="px-6 py-3 flex items-center text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
+                    onClick={() => setIsFilterDate(!isFilterDate)}
                   >
                     Date
+                    {!isFilterDate ? (
+                      <ChevronDownIcon className="w-3 h-3 ml-1" />
+                    ) : (
+                      <ChevronUpIcon className="w-3 h-3 ml-1" />
+                    )}
                   </th>
                 </tr>
               </thead>
@@ -121,8 +142,14 @@ export default function ActivityToken() {
                             </span>
                           ) : (
                             <span className="text-red-500 ml-2">
-                              {item.new_volume_balance -
-                                item.old_volume_balance}
+                              {parseFloat(
+                                item.new_volume_balance -
+                                  item.old_volume_balance ===
+                                  0
+                                  ? 0
+                                  : item.new_volume_balance -
+                                      item.old_volume_balance
+                              ).toFixed(2)}
                               $
                             </span>
                           )}

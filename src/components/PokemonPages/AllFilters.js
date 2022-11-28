@@ -9,8 +9,8 @@ import {
 import { classNames } from "@/utils/constant";
 import { getPokemonElementType } from "constant-pokechain";
 import Image from "next/image";
-const AllFilters = ({selectedElement, setSelectedElement}) => {
-  const filterElement = [
+const AllFilters = ({filterElement, setFilterElement}) => {
+  const elementFilter = [
     {
       name: "normal",
       active: false,
@@ -103,7 +103,7 @@ const AllFilters = ({selectedElement, setSelectedElement}) => {
           <div>
             <Menu.Button
               className={`inline-flex justify-center w-full rounded-md border ${
-                selectedElement.length > 0
+                filterElement.length > 0
                   ? "border-indigo-500 text-indigo-500"
                   : "border-gray-700 text-white"
               }  shadow-sm px-4 py-2 bg-black text-sm  font-medium hover:bg-gray-700/50 focus:outline-none`}
@@ -114,8 +114,8 @@ const AllFilters = ({selectedElement, setSelectedElement}) => {
               />
               <div className="flex items-center">
                 <span>All Filters</span>
-                {useFilterElement && selectedElement.length > 0 && (
-                  <span className="ml-1">({selectedElement.length})</span>
+                {useFilterElement && filterElement.length > 0 && (
+                  <span className="ml-1">({filterElement.length})</span>
                 )}
               </div>
             </Menu.Button>
@@ -135,7 +135,7 @@ const AllFilters = ({selectedElement, setSelectedElement}) => {
                 <div className="flex items-center justify-between">
                   <span className="text-lg text-white font-medium">Filter</span>
                   <div className="p-2 cursor-pointer flex items-center justify-center  rounded-md bg-rose-500 hover:bg-rose-600/50" onClick={()=>{
-                    setSelectedElement([])
+                 setFilterElement([])
                   }}>
                     <span className="text-white text-sm">Reset</span>
                   </div>
@@ -156,10 +156,10 @@ const AllFilters = ({selectedElement, setSelectedElement}) => {
                       <span className="text-md text-white font-bold ">
                         Element
                       </span>
-                      {selectedElement.length > 0 && (
+                      {filterElement.length > 0 && (
                         <div className="px-2 rounded-full bg-amber-500">
                           <span className="text-white font-bold">
-                            {selectedElement.length}
+                            {filterElement.length}
                           </span>
                         </div>
                       )}
@@ -168,7 +168,7 @@ const AllFilters = ({selectedElement, setSelectedElement}) => {
                   {useFilterElement && (
                     <div>
                       <div className="flex flex-wrap items-center gap-2 mt-2 select-none">
-                        {filterElement.map((element, index) => {
+                        {elementFilter.map((element, index) => {
                           const pokemonElement = getPokemonElementType(
                             element.name
                           );
@@ -177,20 +177,20 @@ const AllFilters = ({selectedElement, setSelectedElement}) => {
                               key={index}
                               className="cursor-pointer bg-slate-800 rounded-md px-2 w-max py-1 border border-transparent hover:border-gray-700 transition duration-150 hover:ease-in-out"
                               style={
-                                selectedElement.includes(element.name)
+                                filterElement.includes(element.name)
                                   ? { borderColor: pokemonElement.hex }
                                   : {}
                               }
                               onClick={() => {
-                                if (selectedElement.includes(element.name)) {
-                                  setSelectedElement(
-                                    selectedElement.filter(
+                                if (filterElement.includes(element.name)) {
+                               setFilterElement(
+                                    filterElement.filter(
                                       (item) => item !== element.name
                                     )
                                   );
                                 } else {
-                                  setSelectedElement([
-                                    ...selectedElement,
+                               setFilterElement([
+                                    ...filterElement,
                                     element.name,
                                   ]);
                                 }

@@ -17,11 +17,13 @@ import { ExclamationIcon } from "@heroicons/react/solid";
 import ConvertBalanceToToken from "./ConvertBalanceToToken";
 import ActivityToken from "./ActivityToken";
 import ConvertTokenToBalance from "./ConvertTokenToBalance";
+import SellToken from "./SellToken";
 const ListToken = ({ TabsComponent }) => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const { currentUser } = useUser();
   const [openConvertToToken, setOpenConvertToToken] = useState(false);
   const [openConvertToBalance, setOpenConvertToBalance] = useState(false);
+  const [openSellToken, setOpenSellToken] = useState(false);
 
   const stats = [
     {
@@ -38,6 +40,7 @@ const ListToken = ({ TabsComponent }) => {
           </div>
         </>
       ),
+      handleClick: () => {},
     },
     {
       id: 2,
@@ -52,6 +55,7 @@ const ListToken = ({ TabsComponent }) => {
           </div>
         </>
       ),
+      handleClick: () => setOpenSellToken(true),
     },
   ];
 
@@ -65,8 +69,9 @@ const ListToken = ({ TabsComponent }) => {
         open={openConvertToBalance}
         setOpen={setOpenConvertToBalance}
       />
+      <SellToken open={openSellToken} setOpen={setOpenSellToken} />
       <div className="flex-1 flex items-stretch overflow-hidden">
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1">
           <div className="pt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex">
               <h1 className="flex-1 text-2xl font-bold text-white">Backpack</h1>
@@ -113,6 +118,7 @@ const ListToken = ({ TabsComponent }) => {
                   {stats.map((item) => (
                     <div
                       key={item.id}
+                      onClick={item.handleClick}
                       className="relative  bg-gray-800 border border-slate-800 pt-5 px-8 pb-2 sm:pt-6 sm:px-6 shadow rounded-lg overflow-hidden"
                     >
                       <div className="flex flex-col">

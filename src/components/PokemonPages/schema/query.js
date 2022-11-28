@@ -1,7 +1,7 @@
 import { publicRequest } from "@/utils/axiosInstance";
 
 export const getAllPokemon = async (page = 0,selected,selectedElement) => {
-  const response = await publicRequest.get(`/pokemon?page=${page}&selected=${selected}&selectedElement=${selectedElement}`);
+  const response = await publicRequest.get(`/pokemon?page=${page}&filterSelected=${selected}&filterElement=${selectedElement}`);
   return response.data;
 };
 

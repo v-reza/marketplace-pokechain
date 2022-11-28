@@ -127,7 +127,7 @@ const RecentListings = () => {
           </div>
           <div className="mt-4 pb-16  max-w-md px-4 sm:max-w-4xl sm:px-6 lg:px-8 md:max-w-5xl lg:max-w-full relative">
             <div
-              className="w-full space-x-4 pb-6 pt-4 flex items-center overflow-x-auto lg:overflow-x-hidden"
+              className={`w-full space-x-4 pb-6 pt-4 flex items-center ${recentListings.results>0?'':'justify-center'} overflow-x-auto lg:overflow-x-hidden`}
               id="scroll_item_topSales"
               ref={scrollRecentSales}
             >
@@ -137,7 +137,7 @@ const RecentListings = () => {
                   onClick={() => scroll(-300, "activeRight")}
                 >
                   <div className="ml-4 mt-32 p-2 bg-gray-700 hover:bg-gray-600 rounded-md">
-                    <ArrowLeftIcon className="w-5 h-5 text-white" />
+                    <ArrowLeftIcon className={`${recentListings.results>0?'':'hidden'} w-5 h-5 text-white`} />
                   </div>
                 </div>
               )}
@@ -147,12 +147,12 @@ const RecentListings = () => {
                   onClick={() => scroll(300, "activeLeft")}
                 >
                   <div className="mr-4 mt-32 p-2 bg-gray-700 hover:bg-gray-600 rounded-md">
-                    <ArrowRightIcon className="w-5 h-5 text-white" />
+                    <ArrowRightIcon className={`${recentListings.results>0?'':'hidden'} w-5 h-5 text-white`} />
                   </div>
                 </div>
               )}
-              {!isLoading
-                ? recentListings.results.map((item, index) => (
+              {!isLoading ?
+                recentListings.results > 0 ? recentListings.results.map((item, index) => (
                     <div
                       className="flex flex-col items-start space-y-2"
                       key={item.id}
@@ -168,7 +168,9 @@ const RecentListings = () => {
                         {moment(item.created_at).fromNow()}
                       </span>
                     </div>
-                  ))
+                  )):(
+                    <div className="text-white">Data Not Found</div>
+                  )
                 : new Array(9).fill(0).map((_, index) => (
                     <div key={index}>
                       <div className="h-56 w-56 animate-pulse bg-gray-700 rounded-lg" />

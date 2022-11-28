@@ -13,7 +13,14 @@ import {
   getRarity,
 } from "constant-pokechain";
 import Image from "next/image";
-const AllFilterItems = () => {
+import { useQueryClient } from "react-query";
+const AllFilterItems = ({
+  selectedItems,
+  setSelectedItems,
+  selectedRarity,
+  setSelectedRarity,
+}) => {
+  const queryClient = useQueryClient();
   const filterItems = [
     {
       name: "awakening",
@@ -78,8 +85,6 @@ const AllFilterItems = () => {
       active: false,
     },
   ];
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [selectedRarity, setSelectedRarity] = useState([]);
 
   return (
     <div>
@@ -88,7 +93,7 @@ const AllFilterItems = () => {
           <div>
             <Menu.Button
               className={`inline-flex justify-center w-full rounded-md border ${
-                selectedItems.length > 0
+                selectedItems.length > 0 || selectedRarity.length > 0
                   ? "border-indigo-500 text-indigo-500"
                   : "border-gray-700 text-white"
               }  shadow-sm px-4 py-2 bg-black text-sm  font-medium hover:bg-gray-700/50 focus:outline-none`}
@@ -123,9 +128,17 @@ const AllFilterItems = () => {
               <div className="py-2 px-4">
                 <div className="flex items-center justify-between">
                   <span className="text-lg text-white font-medium">Filter</span>
-                  <span className="text-rose-500 hover:text-rose-600  text-md cursor-pointer">
-                    Clear Filter
-                  </span>
+                  <div className="p-2 cursor-pointer flex items-center justify-center  rounded-md bg-rose-500 hover:bg-rose-600/50">
+                    <span
+                      className="text-white text-sm"
+                      onClick={() => {
+                        setSelectedItems([]);
+                        setSelectedRarity([]);
+                      }}
+                    >
+                      Clear Filter
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="py-1">

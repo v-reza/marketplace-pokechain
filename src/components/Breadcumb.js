@@ -41,7 +41,7 @@ const Breadcumb = () => {
             </div>
           </Link>
           <ChevronRightIcon className="h-4 w-4 text-slate-500" />
-          <Link href={"/"+pathname}>
+          <Link href={`/${pathname}`}>
             <span className="text-white text-sm font-bold cursor-pointer capitalize">
               {pathname}
             </span>

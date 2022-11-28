@@ -2,25 +2,83 @@ import { HeartIcon, PencilIcon } from "@heroicons/react/outline";
 import iconHealth from "@/dist/health.jpeg";
 import iconAttack from "@/dist/attack.jpeg";
 import iconDefense from "@/dist/defense.png";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { getEvolveItem, getPokemonElementType } from "constant-pokechain";
 import { Tooltip } from "flowbite-react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getPokemonEvolution } from "../schema/query";
 import { ArrowLeftIcon, XIcon } from "@heroicons/react/solid";
 import { useMediaQuery } from "react-responsive";
+import { useAxios } from "@/utils/axiosInstance";
+import { useEffect } from "react";
+import ConfirmSellPokemon from "./ConfirmSellPokemon";
+import { sellBackpackPokemon } from "../schema/mutation";
+import { setNotification } from "@/redux/action/notificationActions";
+import { useDispatch } from "react-redux";
 
 const DetailListPokemon = ({ open, setOpen, detailPokemon, detailRef }) => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
+  const [inputPrice, setInputPrice] = useState("");
+  const [confirmSell, setConfirmSell] = useState(false)
+
+  const axiosInstance = useAxios();
+  const queryClient = useQueryClient();
+  const dispatch = useDispatch()
+
+  const initialValueForm = {
+    id: detailPokemon.id,
+    price: 0,
+    name: detailPokemon.name,
+  };
+  const [form, setForm] = useState(initialValueForm);
+
+
+  const mutation = useMutation({
+    mutationFn: (data) => sellBackpackPokemon(axiosInstance, data),
+    onMutate: () => {
+      setOpen(false)
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries("listPokemon");
+      queryClient.invalidateQueries("detailPokemon");
+      setNotification(dispatch, {
+        message: result.msg,
+        error:false
+      })
+    },
+    onError: (err) => {
+      setNotification(dispatch, {
+        message: err.response.data.msg,
+        error:true
+      })
+    }
+  })
+
+  const handleMutationConfirm = () => {
+    mutation.mutate(form)
+  }
+
   const { isFetching, data: isEvolve } = useQuery({
     queryKey: ["detailPokemon", detailPokemon.name],
     queryFn: () => getPokemonEvolution(detailPokemon.name),
     enabled: !!detailPokemon.name,
     refetchOnWindowFocus: false,
   });
+  
+
+  useEffect(() => {
+    setForm(initialValueForm)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [detailPokemon.name])
   return (
     <>
+    <ConfirmSellPokemon
+      open={confirmSell}
+      setOpen={setConfirmSell}
+      onSubmit={handleMutationConfirm}
+      form={form}
+    />
       <div ref={detailRef}>
         <aside
           className={`${
@@ -328,12 +386,32 @@ const DetailListPokemon = ({ open, setOpen, detailPokemon, detailRef }) => {
             </div>
 
             <div className="flex">
-              <button
-                type="button"
-                className="flex-1 bg-rose-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Sell
-              </button>
+              <div className="flex flex-col space-y-2">
+                <label className="text-rose-500">Sell Pokemon</label>
+                <div className="flex space-x-4">
+                  <input
+                    id="price"
+                    type="number"
+                    value={inputPrice}
+                    onChange={(e) => {
+                      setInputPrice(e.target.value);
+                      setForm({
+                        ...form,
+                        price: parseInt(e.target.value),
+                      });
+                    }}
+                    placeholder="Please input price"
+                    className={`bg-transparent py-2 px-2 border rounded-md shadow-sm text-sm font-medium border-slate-600 text-white  focus:outline-none `}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setConfirmSell(true)}
+                    className="flex-1 bg-rose-600 py-2  px-12 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-rose-700 focus:outline-none"
+                  >
+                    Sell
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </aside>

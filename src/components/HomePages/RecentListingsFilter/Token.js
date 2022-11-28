@@ -51,7 +51,7 @@ const Token = ({ item }) => {
           </div>
           <div>
             <span className="capitalize text-sm font-bold text-slate-300">
-              ${item.price}
+            ${parseFloat(item.price).toFixed(2)}
             </span>
           </div>
         </div>

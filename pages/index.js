@@ -11,11 +11,9 @@ import {
   getRecentListings,
   getRecentSales,
 } from "@/components/HomePages/schema/query";
+import useSocket from "@/hooks/useSocket";
 
 export default function IndexPages() {
-  // const { currentUser } = useUser();
-  // const { accessToken } = useSelector(state => state.auth)
-  // console.log("accessToken => ", accessToken)
   return (
     <>
       <div className="h-screen bg-gray-900 min-h-full flex-1">

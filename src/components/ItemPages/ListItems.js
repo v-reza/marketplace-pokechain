@@ -18,8 +18,7 @@ import { getAllItems } from "./schema/query";
 import moment from "moment";
 import Link from "next/link";
 
-const ListItems = (props) => {
-  const { items } = props;
+const ListItems = ({ selectedItems, selectedRarity }) => {
   const filter = [
     { id: 1, name: "Lowest Price", active: true },
     { id: 2, name: "Highest Price", active: false },
@@ -29,42 +28,35 @@ const ListItems = (props) => {
   ];
   const router = useRouter();
   const [pages, setPages] = useState(1);
+  const [selected, setSelected] = useState(filter[0]);
+
   const { data: allItems, isFetching } = useQuery({
-    queryKey: ["allItems", pages],
-    queryFn: () => getAllItems(pages),
+    queryKey: [
+      "allItems",
+      { pages: pages },
+      { sort: selected.name.toLowerCase().replace(" ", "_") },
+      { filterItems: selectedItems },
+      { filterRarity: selectedRarity },
+    ],
+    queryFn: () =>
+      getAllItems(
+        pages,
+        selected.name.toLowerCase().replace(" ", "_"),
+        selectedItems,
+        selectedRarity
+      ),
     keepPreviousData: true,
   });
-
-  const [selected, setSelected] = useState(filter[0]);
 
   useEffect(() => {
     setPages(router.query.page ? router.query.page : 1);
     if (pages > allItems?.totalPages) {
       router.replace({
         pathname: router.pathname,
-        query: { page: allItems?.totalPages },
+        query: { page: allItems?.totalPages === 0 ? 1 : allItems?.totalPages },
       });
     }
   }, [router.query.page, allItems?.totalPages]);
-
-  if (selected.id === 1) {
-    //lowest price
-    allItems?.results.sort((a, b) => a.price - b.price);
-  } else if (selected.id === 2) {
-    //highest price
-    allItems?.results.sort((a, b) => b.price - a.price);
-  } else if (selected.id === 3) {
-    //lowest id
-    allItems?.results.sort((a, b) => a.increment_id - b.increment_id);
-  } else if (selected.id === 4) {
-    //highest id
-    allItems?.results.sort((a, b) => b.increment_id - a.increment_id);
-  } else if (selected.id === 5) {
-    //latest
-    allItems?.results.sort(
-      (a, b) => new Date(b.created_at) - new Date(a.created_at)
-    );
-  }
 
   return (
     <div>
@@ -143,9 +135,18 @@ const ListItems = (props) => {
             )}
           </Listbox>
         </div>
-        <div className="mt-4 pb-10 mx-auto max-w-md px-4 grid gap-4 lg:gap-12 sm:max-w-4xl sm:px-6 lg:px-8 sm:grid-cols-2  md:max-w-5xl md:grid-cols-2  xl:grid-cols-4 lg:max-w-full">
-          {!isFetching
-            ? allItems.results.map((item, index) => (
+        <div
+          className={`mt-4 pb-10 mx-auto max-w-md px-4 ${
+            isFetching
+              ? "grid gap-4 lg:gap-12  sm:grid-cols-2  md:grid-cols-2 xl:grid-cols-4"
+              : allItems?.results.length > 0
+              ? "grid gap-4 lg:gap-12  sm:grid-cols-2  md:grid-cols-2 xl:grid-cols-4"
+              : "pb-72"
+          } sm:max-w-4xl sm:px-6 lg:px-8 md:max-w-5xl lg:max-w-full`}
+        >
+          {!isFetching ? (
+            allItems?.results.length > 0 ? (
+              allItems.results.map((item, index) => (
                 <Link key={index} href={`/items/${item.increment_id}`}>
                   <div
                     className="flex flex-col items-start space-y-2"
@@ -256,6 +257,16 @@ const ListItems = (props) => {
                                   #{item.increment_id}
                                 </span>
                               </div>
+                              {item.buyer_id && (
+                                <div className="flex items-center space-x-1 ">
+                                  <span className="text-xs font-medium text-slate-400">
+                                    Sold out by
+                                  </span>
+                                  <span className="text-xs font-medium text-slate-400">
+                                    @{item.buyer.user.username}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -267,60 +278,69 @@ const ListItems = (props) => {
                   </div>
                 </Link>
               ))
-            : new Array(12).fill(0).map((_, index) => (
-                <div key={index}>
-                  <div className="h-56 w-full animate-pulse bg-gray-700 rounded-lg" />
-                </div>
-              ))}
+            ) : (
+              <div className="flex items-center justify-center text-md text-white text-lg">
+                No items found
+              </div>
+            )
+          ) : (
+            new Array(12).fill(0).map((_, index) => (
+              <div key={index}>
+                <div className="h-56 w-full animate-pulse bg-gray-700 rounded-lg" />
+              </div>
+            ))
+          )}
         </div>
-        <div className="w-full flex items-center justify-center">
-          <div className="flex items-center space-x-4">
-            <div
-              className={`ml-4 p-2  ${
-                allItems?.hasPrevious
-                  ? "cursor-pointer bg-gray-700 hover:bg-gray-600"
-                  : "cursor-not-allowed bg-gray-800"
-              } rounded-md`}
-              onClick={() =>
-                allItems?.hasPrevious &&
-                router.replace({
-                  pathname: router.pathname,
-                  query: { page: parseInt(pages) - 1 },
-                })
-              }
-            >
-              <ArrowLeftIcon className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-md font-bold text-white">Page</span>
-            <input
-              type="number"
-              value={pages}
-              onChange={() => {}}
-              className="w-12 h-10 text-center text-md font-bold text-white bg-gray-700 rounded-md"
-            />
-            <span className="text-md font-medium text-white">
-              of {allItems?.totalPages}
-            </span>
-            <div
-              className={`ml-4 p-2  ${
-                allItems?.hasNext
-                  ? "cursor-pointer bg-gray-700 hover:bg-gray-600"
-                  : "cursor-not-allowed bg-gray-800"
-              } rounded-md`}
-              onClick={() => {
-                if (allItems?.hasNext) {
-                  // queryClient.refetchQueries("allPokemon")
+        {allItems?.results.length > 0 && (
+          <div className="w-full flex items-center justify-center">
+            <div className="flex items-center space-x-4">
+              <div
+                className={`ml-4 p-2  ${
+                  allItems?.hasPrevious
+                    ? "cursor-pointer bg-gray-700 hover:bg-gray-600"
+                    : "cursor-not-allowed bg-gray-800"
+                } rounded-md`}
+                onClick={() =>
+                  allItems?.hasPrevious &&
                   router.replace({
                     pathname: router.pathname,
-                    query: { page: parseInt(pages) + 1 },
-                  });
+                    query: { page: parseInt(pages) - 1 },
+                  })
                 }
-              }}
-            >
-              <ArrowRightIcon className="w-5 h-5 text-white" />
+              >
+                <ArrowLeftIcon className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-md font-bold text-white">Page</span>
+              <input
+                type="number"
+                value={pages}
+                onChange={() => {}}
+                className="w-12 h-10 text-center text-md font-bold text-white bg-gray-700 rounded-md"
+              />
+              <span className="text-md font-medium text-white">
+                of {allItems?.totalPages}
+              </span>
+              <div
+                className={`ml-4 p-2  ${
+                  allItems?.hasNext
+                    ? "cursor-pointer bg-gray-700 hover:bg-gray-600"
+                    : "cursor-not-allowed bg-gray-800"
+                } rounded-md`}
+                onClick={() => {
+                  if (allItems?.hasNext) {
+                    // queryClient.refetchQueries("allPokemon")
+                    router.replace({
+                      pathname: router.pathname,
+                      query: { page: parseInt(pages) + 1 },
+                    });
+                  }
+                }}
+              >
+                <ArrowRightIcon className="w-5 h-5 text-white" />
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

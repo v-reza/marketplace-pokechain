@@ -5,7 +5,7 @@ import OverallStats from "@/components/HomePages/OverallStats";
 import ListPokemon from "@/components/PokemonPages/ListPokemon";
 
 const PokemonPages = () => {
-  const [selectedElement, setSelectedElement] = useState([]);
+  const [filterElement, setFilterElement] = useState([]);
 
   return (
     <>
@@ -20,8 +20,8 @@ const PokemonPages = () => {
         <div className="relative overflow-hidden">
           <main>
             <Breadcumb />
-            <AllFilters setSelectedElement={setSelectedElement} selectedElement={selectedElement}/>
-            <ListPokemon setSelectedElement={setSelectedElement} selectedElement={selectedElement}/>
+            <AllFilters setFilterElement={setFilterElement} filterElement={filterElement}/>
+            <ListPokemon setFilterElement={setFilterElement} filterElement={filterElement}/>
           </main>
         </div>
       </div>
