@@ -7,6 +7,8 @@ import { Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 import { classNames } from "@/utils/constant";
+import { useQuery, useQueryClient } from "react-query";
+import { getOverallStats } from "./schema/query";
 
 const OverallStats = () => {
   const filterTime = [
@@ -15,6 +17,17 @@ const OverallStats = () => {
     { id: 3, name: "30 days", nameUpper: "30D", active: false },
   ];
   const [selected, setSelected] = useState(filterTime[0]);
+  const queryClient = useQueryClient();
+  const {
+    isLoading,
+    isError,
+    data: overallStats,
+    error,
+  } = useQuery({
+    queryKey: ["overallStats", selected.nameUpper],
+    queryFn: () => getOverallStats(selected.nameUpper),
+  });
+
 
   return (
     <div>
@@ -25,15 +38,11 @@ const OverallStats = () => {
               Overall Stats
             </p>
             <div className="hidden space-x-2 sm:flex items-center">
-              <div className="text-indigo-500 font-bold px-4 py-2 bg-gray-700 hover:bg-gray-700 rounded-md cursor-pointer">
-                24H
-              </div>
-              <div className="text-indigo-500 font-bold px-4 py-2  hover:bg-gray-700 rounded-md cursor-pointer">
-                7D
-              </div>
-              <div className="text-indigo-500 font-bold px-4 py-2  hover:bg-gray-700 rounded-md cursor-pointer">
-                30D
-              </div>
+              {filterTime.map((data) => (
+                <div className={`text-indigo-500 font-bold px-4 py-2 ${selected.id===data.id ? 'bg-gray-700' : ''} hover:bg-gray-700 rounded-md cursor-pointer`} onClick={()=>setSelected(data)}>
+                  {data.nameUpper}
+                </div>
+              ))}
             </div>
             <div className="block sm:hidden">
               <Listbox value={selected} onChange={setSelected}>
@@ -123,7 +132,7 @@ const OverallStats = () => {
                 <span className="text-sm font-extrabold text-slate-400">
                   Total Sales
                 </span>
-                <span className="text-md font-extrabold text-white">8.000</span>
+                <span className="text-md font-extrabold text-white">{isLoading ? '0' :overallStats.total_sales}</span>
               </div>
             </div>
             <div className="flex space-x-2">
@@ -133,7 +142,7 @@ const OverallStats = () => {
                   Total Volume
                 </span>
                 <span className="text-md font-extrabold text-white">
-                  {process.env.formatCurrency}120.890
+                  {process.env.formatCurrency}{isLoading ? '0' :overallStats.total_volume}
                 </span>
               </div>
             </div>
@@ -148,7 +157,7 @@ const OverallStats = () => {
                 <span className="text-sm font-extrabold text-slate-400">
                   Pokemons Sold
                 </span>
-                <span className="text-md font-extrabold text-white">2.220</span>
+                <span className="text-md font-extrabold text-white">{isLoading ? '0' :overallStats.pokemon_sold}</span>
               </div>
             </div>
           </div>

@@ -11,6 +11,7 @@ import {
   getRecentListings,
   getRecentSales,
 } from "@/components/HomePages/schema/query";
+import useSocket from "@/hooks/useSocket";
 
 export default function IndexPages() {
   return (

@@ -12,10 +12,13 @@ import axios from "axios";
 import { Tooltip } from "flowbite-react";
 import Image from "next/image";
 import bgToken from "@/dist/token.png";
+import { useQuery, useQueryClient } from "react-query";
 import { useRouter } from "next/router";
+import { getAllBundle } from "./schema/query";
 
 const ListBundles = (props) => {
-  const { items } = props;
+  const { items, filterItem, setFilterItem, filterRarity, setFilterRarity } =
+    props;
   const filter = [
     { id: 1, name: "Lowest Price", active: true },
     { id: 2, name: "Highest Price", active: false },
@@ -23,50 +26,51 @@ const ListBundles = (props) => {
     { id: 4, name: "Highest ID", active: false },
     { id: 5, name: "Latest", active: false },
   ];
+
   const router = useRouter();
   const [pages, setPages] = useState(1);
-
   const [selected, setSelected] = useState(filter[0]);
-  const [pokemon, setPokemon] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [randomOffset, setRandomOffset] = useState(
-    Math.floor(Math.random() * 800)
-  );
+  const [filterSelected, setFilterSelected] = useState(filter[0]);
+  const {
+    isLoading,
+    isError,
+    error,
+    data: allBundles,
+    isFetching,
+    isRefetching,
+    isFetched,
+    isPreviousData,
+    refetch,
+  } = useQuery({
+    queryKey: [
+      "allbundles",
+      pages,
+      filterItem.join(","),
+      filterRarity.join(),
+      filterSelected.name.split(" ").join("_").toLowerCase(),
+    ],
+    queryFn: () =>
+      getAllBundle(
+        pages,
+        filterItem.join(","),
+        filterRarity.join(),
+        filterSelected.name.split(" ").join("_").toLowerCase()
+      ),
+    keepPreviousData: true,
+  });
+
   useEffect(() => {
     setPages(router.query.page ? router.query.page : 1);
   }, [router.query.page]);
 
-  useEffect(() => {
-    const getPokemon = async () => {
-      try {
-        const res = await axios.get(
-          `https://pokeapi.co/api/v2/pokemon/?offset=${randomOffset}&limit=12`
-        );
-        if (res.data.results.length > 0) {
-          await res.data.results.map(async (item) => {
-            await axios
-              .get(item.url)
-              .then((res) =>
-                setPokemon((prev) => [
-                  ...prev.filter((item) => item.name !== res.data.name),
-                  res.data,
-                ])
-              );
-          });
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getPokemon();
-  }, []);
   return (
     <div>
       <div className="relative py-7 px-8 lg:px-12">
         <div className="pt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <span className="text-white font-bold text-lg">200,678 Bundles</span>
+          <span className="text-white font-bold text-lg">
+            {" "}
+            {!isLoading ? allBundles?.total : 0} Bundles
+          </span>
           <Listbox value={selected} onChange={setSelected}>
             {({ open }) => (
               <>
@@ -138,8 +142,8 @@ const ListBundles = (props) => {
           </Listbox>
         </div>
         <div className="mt-4 pb-10 mx-auto max-w-md px-4 grid gap-4 lg:gap-12 sm:max-w-4xl sm:px-6 lg:px-8 sm:grid-cols-2  md:max-w-5xl md:grid-cols-2  xl:grid-cols-4 lg:max-w-full">
-          {!loading
-            ? items.map((item, index) => (
+          {!isLoading
+            ? allBundles.results.map((item, index) => (
                 <div
                   className="flex flex-col items-start space-y-2"
                   key={index}
@@ -159,50 +163,60 @@ const ListBundles = (props) => {
                           <div className="ml-8 sm:ml-10 md:ml-16 lg:ml-10 flex items-start gridBundlesContainer">
                             <div className="grid grid-cols-2 mt-4 md:gap-x-20 lg:gap-x-16  gap-y-4 gridBundlesItems">
                               {/* if more than 4 show length more */}
-                              {item.types.length > 4 ? (
+                              {item.bundles_items.length > 4 ? (
                                 <>
-                                  {item.types.slice(0, 3).map((type, index) => (
-                                    <div key={index}>
-                                      <Tooltip
-                                        placement="top"
-                                        content={
-                                          <span className="capitalize">
-                                            {getItemType(type).detail.name}
-                                          </span>
-                                        }
-                                      >
-                                        <Image
-                                          alt="item"
-                                          src={getItemType(type).img}
-                                          width={55}
-                                          height={55}
-                                          blurDataURL
-                                          placeholder="blur"
-                                          priority
-                                        />
-                                      </Tooltip>
-                                    </div>
-                                  ))}
+                                  {item.bundles_items
+                                    .slice(0, 3)
+                                    .map((type, index) => (
+                                      <div key={index}>
+                                        <Tooltip
+                                          placement="top"
+                                          content={
+                                            <span className="capitalize">
+                                              {
+                                                getItemType(type.item_name)
+                                                  .detail.name
+                                              }
+                                            </span>
+                                          }
+                                        >
+                                          <Image
+                                            alt="item"
+                                            src={
+                                              getItemType(type.item_name).img
+                                            }
+                                            width={55}
+                                            height={55}
+                                            blurDataURL
+                                            placeholder="blur"
+                                            priority
+                                          />
+                                        </Tooltip>
+                                      </div>
+                                    ))}
                                   <div className="flex items-center justify-center">
                                     <span className="text-white text-xs font-bold">
-                                      + {item.types.length - 3} more
+                                      + {item.bundles_items.length - 3} more
                                     </span>
                                   </div>
                                 </>
                               ) : (
-                                item.types.map((type, index) => (
+                                item.bundles_items.map((type, index) => (
                                   <div key={index}>
                                     <Tooltip
                                       placement="top"
                                       content={
                                         <span className="capitalize">
-                                          {getItemType(type).detail.name}
+                                          {
+                                            getItemType(type.item_name).detail
+                                              .name
+                                          }
                                         </span>
                                       }
                                     >
                                       <Image
                                         alt="item"
-                                        src={getItemType(type).img}
+                                        src={getItemType(type.item_name).img}
                                         width={55}
                                         height={55}
                                         blurDataURL
@@ -229,7 +243,7 @@ const ListBundles = (props) => {
                             </span>
                           </div>
                           <span className="capitalize text-sm font-bold text-slate-300">
-                            ${Math.floor(Math.random() * 500)}
+                            $0232
                           </span>
                         </div>
                       </div>
@@ -248,7 +262,7 @@ const ListBundles = (props) => {
                             </div>
                             <div className="flex items-center">
                               <span className="text-xs font-bold text-slate-400">
-                                {item.types.length} items
+                                {item.bundles_items.length} items
                               </span>
                             </div>
                           </div>

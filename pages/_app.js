@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import { store, wrapper } from "@/redux/store";
 import "../styles/globals.css";
 import { AuthContextProvider as AuthGuard } from "src/contexts/AuthContext";
+import { SocketContextProvider as SocketConnect } from "@/contexts/SocketContext";
 import { QueryClient, QueryClientProvider, Hydrate } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import App from "next/app";
@@ -43,16 +44,18 @@ function MyApp({ Component, pageProps, hiddenSidebar, isAuth, ...props }) {
       <QueryClientProvider client={queryClient}>
         <Hydrate state={pageProps.dehydratedState}>
           <AuthGuard>
-            <Notification />
-            {hiddenSidebar ? (
-              <ComponentApp Component={Component} pageProps={pageProps} />
-            ) : (
-              <CustomComponent
-                Component={Component}
-                pageProps={pageProps}
-                isAuth={isAuth}
-              />
-            )}
+            {/* <SocketConnect> */}
+              <Notification />
+              {hiddenSidebar ? (
+                <ComponentApp Component={Component} pageProps={pageProps} />
+              ) : (
+                <CustomComponent
+                  Component={Component}
+                  pageProps={pageProps}
+                  isAuth={isAuth}
+                />
+              )}
+            {/* </SocketConnect> */}
           </AuthGuard>
           <ReactQueryDevtools
             initialIsOpen={process.env.NODE_ENV !== "production" ? true : false}

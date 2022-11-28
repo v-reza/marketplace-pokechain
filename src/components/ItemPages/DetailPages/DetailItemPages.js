@@ -97,7 +97,7 @@ const DetailItemPages = ({ item, isAuth }) => {
               <div className="lg:col-span-2 lg:pl-64">
                 <div className="flex flex-col space-y-20">
                   <div>
-                    <h3 className="text-lg text-white font-bold">About</h3>
+                    <h3 className="text-lg text-white font-bold my-2">About</h3>
                     <div className="bg-gray-800 rounded-md border border-gray-700 h-56">
                       <div className="py-6 px-8 block">
                         <div>
@@ -189,7 +189,7 @@ const DetailItemPages = ({ item, isAuth }) => {
                     </div>
                   </div>
                   <div className="pb-20">
-                    <h3 className="text-lg text-white font-bold">Effect</h3>
+                    <h3 className="text-lg text-white font-bold my-2">Effect</h3>
                     <div className="bg-gray-800 rounded-md border border-gray-700 h-max">
                       <div className="py-6 px-8 block">
                         <div>

@@ -24,6 +24,8 @@ import useAuth from "@/hooks/useAuth";
 import { useDispatch } from "react-redux";
 import { useAxios } from "@/utils/axiosInstance";
 import Image from "next/image";
+import useActionClick from "@/hooks/useActionClick";
+import { setIsOpen } from "@/redux/reducer/actionClickReducer";
 
 const SidebarMainContent = ({ children }) => {
   return <>{children}</>;
@@ -31,7 +33,6 @@ const SidebarMainContent = ({ children }) => {
 
 const Sidebar = ({ children, isAuth }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [largeSidebarOpen, setLargeSidebarOpen] = useState(true);
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const [isLoggedOut, setIsLoggedOut] = useState(false);
   const [isAuthState, setIsAuthState] = useState(false);
@@ -40,6 +41,8 @@ const Sidebar = ({ children, isAuth }) => {
   const router = useRouter();
   const { dispatch } = useAuth();
   const dispatchRedux = useDispatch();
+  const {isOpen} = useActionClick()
+  console.log(isOpen)
   const axiosInstance = useAxios();
   const refresh_token = currentUser?.refresh_token;
   const handleLogout = async (e) => {
@@ -221,7 +224,7 @@ const Sidebar = ({ children, isAuth }) => {
                                   fill="currentColor"
                                 ></path>
                               </svg>
-                              {largeSidebarOpen && (
+                              {isOpen && (
                                 <span className="font-medium">Log in</span>
                               )}
                             </div>
@@ -242,14 +245,14 @@ const Sidebar = ({ children, isAuth }) => {
         {/* Static sidebar for desktop */}
         <div
           className={`hidden lg:flex ${
-            largeSidebarOpen ? "lg:w-72" : "w-24"
+            isOpen ? "lg:w-72" : "w-24"
           } lg:flex-col lg:fixed lg:inset-y-0 relative duration-150`}
         >
           <img
             src="/assets/images/control.png"
             className={`absolute cursor-pointer -right-3 top-9 w-7 border-cyan-700
-           border-2 rounded-full  ${!largeSidebarOpen && "rotate-180"}`}
-            onClick={() => setLargeSidebarOpen(!largeSidebarOpen)}
+           border-2 rounded-full  ${!isOpen && "rotate-180"}`}
+            onClick={() => dispatchRedux(setIsOpen())}
           />
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex flex-col flex-grow bg-gray-900 pt-8 pb-4 overflow-y-auto">
@@ -259,7 +262,7 @@ const Sidebar = ({ children, isAuth }) => {
                 src="/assets/images/icons.png"
                 alt="Pokechains logo"
               />
-              {largeSidebarOpen && (
+              {isOpen && (
                 <div className="text-transparent font-extrabold text-lg bg-clip-text bg-gradient-to-r from-[#73E0A9] to-[#5B68DF]">
                   Pokechains
                 </div>
@@ -297,7 +300,7 @@ const Sidebar = ({ children, isAuth }) => {
                         }`}
                       ></path>
                     </svg>
-                    {largeSidebarOpen && (
+                    {isOpen && (
                       <span
                         className={`ml-2 ${
                           router.pathname === "/"
@@ -310,7 +313,7 @@ const Sidebar = ({ children, isAuth }) => {
                     )}
                   </div>
                 </Link>
-                {largeSidebarOpen && (
+                {isOpen && (
                   <span className="text-sm font-extrabold text-slate-400 px-8">
                     Collections
                   </span>
@@ -338,13 +341,13 @@ const Sidebar = ({ children, isAuth }) => {
                             className={`${
                               item.customSize ? "w-8 h-8" : "h-5 w-8"
                             } ${
-                              largeSidebarOpen ? "ml-5" : "ml-4"
+                              isOpen ? "ml-5" : "ml-4"
                             } flex-shrink-0`}
                             alt="icon"
                             src={item.icon.src}
                           />
                         </Tooltip>
-                        {largeSidebarOpen && (
+                        {isOpen && (
                           <span className="mr-4 font-extrabold">
                             {item.name}
                           </span>
@@ -377,7 +380,7 @@ const Sidebar = ({ children, isAuth }) => {
                       fill="currentColor"
                     ></path>
                   </svg>
-                  {largeSidebarOpen && (
+                  {isOpen && (
                     <span className="font-medium">Log in</span>
                   )}
                 </div>
@@ -397,7 +400,7 @@ const Sidebar = ({ children, isAuth }) => {
                         src="https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F43a391b7-152c-4e91-8a87-754bd6ad4b6f_840x1079.png"
                         alt=""
                       />
-                      {largeSidebarOpen && (
+                      {isOpen && (
                         <span className="flex-1 flex flex-col min-w-0">
                           <span className="text-white text-sm font-medium truncate">
                             {currentUser?.profile.fullName ||
@@ -423,7 +426,7 @@ const Sidebar = ({ children, isAuth }) => {
               >
                 <Menu.Items
                   className={`top-2 transform -translate-y-full absolute left-0 ${
-                    !largeSidebarOpen ? "w-max" : "w-56"
+                    !isOpen ? "w-max" : "w-56"
                   } -mt-4 ml-3 border border-slate-700 origin-top-right bg-transparent divide-y divide-slate-600 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
                 >
                   <div className="py-1">
@@ -435,12 +438,12 @@ const Sidebar = ({ children, isAuth }) => {
                             active
                               ? "bg-slate-600/50 text-slate-300"
                               : "text-white",
-                            !largeSidebarOpen &&
+                            !isOpen &&
                               "flex items-center justify-center",
                             "block px-4 py-2 text-sm"
                           )}
                         >
-                          {!largeSidebarOpen ? (
+                          {!isOpen ? (
                             <Tooltip content="View Profile" placement="top">
                               <UserIcon className="w-6 h-6 text-white" />
                             </Tooltip>
@@ -458,12 +461,12 @@ const Sidebar = ({ children, isAuth }) => {
                               active
                                 ? "bg-slate-600/50 text-slate-300"
                                 : "text-white",
-                              !largeSidebarOpen &&
+                              !isOpen &&
                                 "flex items-center justify-center",
                               "block px-4 py-2 text-sm hover:bg-slate-600/50"
                             )}
                           >
-                            {!largeSidebarOpen ? (
+                            {!isOpen ? (
                               <Tooltip content="Backpack" placement="top">
                                 <ArchiveIcon className="w-6 h-6 text-white" />
                               </Tooltip>
@@ -485,12 +488,12 @@ const Sidebar = ({ children, isAuth }) => {
                               active
                                 ? "bg-slate-600/50 text-slate-300"
                                 : "text-white",
-                              !largeSidebarOpen &&
+                              !isOpen &&
                                 "flex items-center justify-center",
                               "block px-4 py-2 text-sm"
                             )}
                           >
-                            {!largeSidebarOpen ? (
+                            {!isOpen ? (
                               <Tooltip content="Logout" placement="top">
                                 <LogoutIcon className="w-6 h-6" />
                               </Tooltip>
@@ -510,7 +513,7 @@ const Sidebar = ({ children, isAuth }) => {
 
         <div
           className={`${
-            largeSidebarOpen ? "lg:pl-72" : "lg:pl-24"
+            isOpen ? "lg:pl-72" : "lg:pl-24"
           } flex flex-col flex-1 duration-150 bg-gray-900 min-h-full`}
         >
           <div className="relative z-10 flex-shrink-0 flex lg:hidden h-16  lg:border-none ">

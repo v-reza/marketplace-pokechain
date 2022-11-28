@@ -11,7 +11,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.6",
     "axios": "^1.1.2",
-    "constant-pokechain": "^1.0.0",
+    "constant-pokechain": "^1.0.1",
     "cookie": "^0.5.0",
     "flowbite": "^1.5.3",
     "flowbite-react": "^0.2.1",

@@ -124,7 +124,7 @@ const RecentSales = () => {
           </div>
           <div className="mt-4 pb-16  max-w-md px-4 sm:max-w-4xl sm:px-6 lg:px-8 md:max-w-5xl lg:max-w-full relative">
             <div
-              className="w-full space-x-4 pb-6 pt-4 flex items-center overflow-x-auto lg:overflow-x-hidden"
+              className={`w-full space-x-4 pb-6 pt-4 flex items-center ${recentSales.results>0?'':'justify-center'} overflow-x-auto lg:overflow-x-hidden`}
               id="scroll_item_topSales"
               ref={scrollRecentSales}
             >
@@ -133,7 +133,7 @@ const RecentSales = () => {
                   className="hidden lg:block absolute top-0 bottom-0 z-20 left-0 mx-auto cursor-pointer"
                   onClick={() => scroll(-300, "activeRight")}
                 >
-                  <div className="ml-4 mt-32 p-2 bg-gray-700 hover:bg-gray-600 rounded-md">
+                  <div className={`${recentSales.results>0?'':'hidden'} ml-4 mt-32 p-2 bg-gray-700 hover:bg-gray-600 rounded-md`}>
                     <ArrowLeftIcon className="w-5 h-5 text-white" />
                   </div>
                 </div>
@@ -143,13 +143,13 @@ const RecentSales = () => {
                   className="hidden lg:block absolute top-0 bottom-0 z-20 right-0 mx-auto cursor-pointer"
                   onClick={() => scroll(300, "activeLeft")}
                 >
-                  <div className="mr-4 mt-32 p-2 bg-gray-700 hover:bg-gray-600 rounded-md">
+                  <div className={`${recentSales.results>0?'':'hidden'} mr-4 mt-32 p-2 bg-gray-700 hover:bg-gray-600 rounded-md`}>
                     <ArrowRightIcon className="w-5 h-5 text-white" />
                   </div>
                 </div>
               )}
               {!isLoading
-                ? recentSales.results.map((item, index) => (
+                ? recentSales.results>0? recentSales.results.map((item, index) => (
                     <div
                       className="flex flex-col items-start space-y-2"
                       key={item.id}
@@ -165,7 +165,9 @@ const RecentSales = () => {
                         {moment(item.created_at).fromNow()}
                       </span>
                     </div>
-                  ))
+                  )):(
+                    <div className="text-white">Data Not Found</div>
+                  )
                 : new Array(9).fill(0).map((_, index) => (
                     <div key={index}>
                       <div className="h-56 w-56 animate-pulse bg-gray-700 rounded-lg" />

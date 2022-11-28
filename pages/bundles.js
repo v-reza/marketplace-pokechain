@@ -2,9 +2,11 @@ import Breadcumb from "@/components/Breadcumb";
 import AllFilterBundles from "@/components/BundlesPages/AllFilters";
 import ListBundles from "@/components/BundlesPages/ListBundles";
 import Head from "next/head";
-import React from "react";
+import React, { useState } from "react";
 
 const BundlesPages = () => {
+  const [filterItem, setFilterItem] = useState([]);
+  const [filterRarity, setFilterRarity] = useState([]);
   const item = [
     {
       types: ["awakening", "full-heal", "master-ball", "max-revive"],
@@ -45,8 +47,8 @@ const BundlesPages = () => {
         <div className="relative overflow-hidden">
           <main>
             <Breadcumb />
-            <AllFilterBundles />
-            <ListBundles items={item} />
+            <AllFilterBundles setFilterItem={setFilterItem} filterItem={filterItem} setFilterRarity={setFilterRarity} filterRarity={filterRarity} />
+            <ListBundles setFilterItem={setFilterItem} filterItem={filterItem} items={item} setFilterRarity={setFilterRarity} filterRarity={filterRarity} />
           </main>
         </div>
       </div>

@@ -12,10 +12,12 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
+import actionClickReducer from "./reducer/actionClickReducer";
 
 const rootReducer = combineReducers({
   user: userReducer,
   notification: notificationReducer,
+  actionClick:actionClickReducer
 });
 
 export const store = configureStore({
